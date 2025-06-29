@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Amarante&family=Faculty+Glyphic&display=swap');
+
+:root{
+    --black: #0a0908ff;
+    --gunmetal: #22333bff;
+    --almond: #eae0d5ff;
+    --khaki: #c6ac8fff;
+    --walnut-brown: #5e503f;
+    --black-bg: #0a0908ff;
+    --dark-bg: #22333bff;
+    --brown-bg: #5e503f;
+    --light-bg: #eae0d5ff;
+    --title-color: #c6ac8fff;
+    --text-color: rgb(22, 22, 21);
+    --link-color: rgb(22, 22, 21);
+    --title-font: "Amarante", serif;;
+    --text-font: "Faculty Glyphic", sans-serif;;
+}
+
