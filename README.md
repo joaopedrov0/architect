@@ -24,3 +24,23 @@ Criação de planejamento e arquitetura de software de forma dinâmica
 ## Decisões arquiteturais
 
 ## Táticas arquiteturais
+
+## Análise Arquitetural
+
+Objetivo: Determinar requisitos arquiteturais
+
+- Definição de Stakeholders
+- Definição de cenários arquiteturais
+- Levantamento de Requisitos Arquiteturais
+
+## Síntese Arquitetural
+
+Objetivo: Projetar a arquitetura para atender os requisitos
+
+- Decisões e táticas arquiteturais
+- Pontos de vista e arcabouços arquiteturais
+- Visões arquiteturais
+
+## Avaliação Arquitetural
+
+Objetivo: Validar se o projeto resultante da síntese atende os requisitos da análise
