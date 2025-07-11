@@ -1,0 +1,1 @@
+from .ArtifactManagerInterface import AbstractManagerInterface
