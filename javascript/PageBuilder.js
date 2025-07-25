@@ -191,11 +191,17 @@ class PageBuilder {
          * @param {string} [placeholder] - O placeholder do campo.
          * @returns {string} O HTML do campo de input.
          */
-        TextInput: (id, label, formName, placeholder = '') => {
+        TextInput: (id, label, formName, placeholder = '', value='', attributes) => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
             return `
             <div class="mb-3">
                 <label for="${id}" class="form-label">${label}</label>
-                <input type="text" class="form-control" id="${id}" name="${formName}" placeholder="${placeholder}">
+                <input type="text" class="form-control" id="${id}" name="${formName}" placeholder="${placeholder}" value="${value}" ${temp_att}>
             </div>`;
         },
 

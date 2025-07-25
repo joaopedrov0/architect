@@ -16,10 +16,11 @@ class StorageManager {
 
     static saveProject(project){
         const projects = StorageManager.getProjects();
-        for(let item of projects){
-            if (project.id === item.id){
-                item = project;
+        for(let index in projects){
+            if (project.id === projects[index].id){
+                projects[index] = project;
                 console.log("Project saved")
+                console.dir(`index: ${index}, project: ${project}`)
                 break;
             }
         }
