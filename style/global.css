@@ -1,0 +1,97 @@
+
+
+body{
+    font-family: var(--text-font);
+    color: var(--text-color);
+}
+
+nav {
+    background-color: var(--dark-bg);
+}
+
+nav .nav-item a.nav-link{
+    color: var(--khaki);
+}
+
+nav .nav-item a.nav-link.active{
+    color: var(--khaki);
+    opacity: 0.6;
+}
+
+nav .nav-item a.nav-link:hover{
+    color: var(--khaki);
+    text-shadow: 0 3px 10px var(--khaki);
+}
+
+.navbar-brand:hover {
+    color: var(--title-color);
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand{
+    color: var(--title-color);
+    font-family: var(--title-font);
+
+}
+
+a{
+    color: var(--link-color);
+}
+
+footer{
+    background: var(--dark-bg);
+}
+
+footer a{
+    color: var(--khaki);
+    text-decoration: none;
+}
+
+footer a:hover{
+    text-decoration: underline;
+
+}
+
+hr{
+    border-color: var(--khaki);
+}
+
+i{
+    font-size: var(--icon-size);
+    margin: 3px;
+}
+
+.export-area .btn:hover{
+    color: var(--khaki);
+    text-decoration: underline;
+}
+
+.settings-list li{
+    padding: 1rem;
+}
+
+.settings-list li:hover{
+    padding: 1rem;
+    background: rgba(200, 200, 200, 0.2);
+    cursor: pointer;
+}
+
+.settings-btn{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+
+.settings-btn i{
+    position: absolute;
+    right: 0;
+    color: var(--khaki);
+}
+
+.btn.danger:hover{
+    text-decoration: underline;
+}
+
+button.navbar-toggler span.navbar-toggler-icon{
+    color: var(--khaki);
+}

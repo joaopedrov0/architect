@@ -1,0 +1,25 @@
+.project-card{
+    background: var(--light-bg);
+    display: flex;
+    justify-content: center;
+    border-radius: 0.3rem;
+
+    transition: all ease 0.2s;
+}
+
+.project-card{
+    text-decoration: none;
+    height: 4rem;
+}
+
+.project-card span.project-name{
+    display: flex;
+    align-items: center;
+}
+
+
+.project-card:hover{
+    background-color: var(--dark-bg);
+    color: var(--khaki);
+    cursor: pointer;
+}

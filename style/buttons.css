@@ -1,0 +1,46 @@
+.architect-btn{
+    background: var(--light-bg);
+    color: var(--walnut-brown);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.architect-btn span{
+    z-index: 3;
+    position: absolute;
+}
+
+.architect-btn::before{
+    content: "";
+    display: flex;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    position: absolute;
+    border-radius: 50%;
+    right: 50%;
+    transform: translateX(50%) translateY(100%);
+    z-index: 0;
+
+    transition: transform ease 0.1s, 
+    width ease 0.1s 0.1s, 
+    height ease 0.1s 0.1s, 
+    border-radius ease 0.1s 0.1s,
+    background-color ease 0.1s;
+}
+
+.architect-btn:hover span{
+    color: var(--khaki);
+}
+
+.architect-btn:hover::before{
+    background: var(--dark-bg);
+    transform: translateX(50%) translateY(0%);
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+}

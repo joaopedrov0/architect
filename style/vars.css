@@ -11,9 +11,12 @@
     --brown-bg: #5e503f;
     --light-bg: #eae0d5ff;
     --title-color: #c6ac8fff;
+    --logo-color: #c6ac8fff;
     --text-color: rgb(22, 22, 21);
     --link-color: rgb(22, 22, 21);
-    --title-font: "Amarante", serif;;
-    --text-font: "Faculty Glyphic", sans-serif;;
+    --title-font: "Amarante", serif;
+    --text-font: "Faculty Glyphic", sans-serif;
+
+    --icon-size: 1.5rem;
 }
 
