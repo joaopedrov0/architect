@@ -7,6 +7,8 @@
     align-items: center;
     overflow: hidden;
     cursor: pointer;
+    min-width: fit-content;
+    min-height: fit-content;
 }
 
 .architect-btn span{
@@ -43,4 +45,22 @@
     width: 100%;
     height: 100%;
     border-radius: 0px;
+}
+
+
+
+.light-architect-btn{
+    background: var(--light-bg);
+    display: flex;
+    justify-content: center;
+    border-radius: 0.3rem;
+
+    transition: all ease 0.2s;
+}
+
+.light-architect-btn:hover{
+    
+    background-color: var(--dark-bg);
+    color: var(--khaki);
+    cursor: pointer;
 }

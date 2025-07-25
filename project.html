@@ -27,7 +27,14 @@
   <link rel="manifest" href="/favicon/site.webmanifest">
 
   <!-- Script -->
-   <script src="/javascript/projectManager.js"></script>
+   
+    <!-- Scripts -->
+    <script src="/javascript/Render.js" defer></script>
+    <script src="/javascript/Project.js" defer></script>
+    <script src="/javascript/PageBuilder.js" defer></script>
+    <script src="/javascript/StorageManager.js" defer></script>
+    <!-- <script src="/javascript/ProjectsMenu.js" defer></script> -->
+   <script src="/javascript/ProjectManager.js" defer></script>
 </head>
 
 <body>
@@ -157,7 +164,7 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
 
   <main>
     <div class="container mt-3">
-      <h1 class="text-xxl-center">The Architect</h1>
+      <h1 class="text-sm-center">The Architect</h1>
 
       <main>
         <div class="container">
@@ -170,6 +177,13 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
               <div class="btn danger">Apagar projeto</div>
             </div>
             <hr>
+
+            <div id="nameField" class="col-md-6 col-12 d-grid">
+              <p>Nome do projeto: nome</p>
+            </div>
+            <div id="authorField" class="col-md-6 col-12 d-grid">
+              <p>Autor(res): emma ayers</p>
+            </div>
 
             <div class="col-md-4 col-12 d-grid">
               <button class="btn settings-btn" type="button" data-bs-toggle="collapse"

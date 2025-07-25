@@ -56,8 +56,8 @@ class PageBuilder {
 //   Launch demo modal
 //         </button>
         },
-        ModalDismissButton: () => {
-            return '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>'
+        ModalDismissButton: (classListString='') => {
+            return `<button type="button" class="btn btn-secondary ${classListString}" data-bs-dismiss="modal">Fechar</button>`
         },
 
         Icon: (idClass, sizeClass) => {
@@ -162,9 +162,24 @@ class PageBuilder {
             }
             return `<button type="button" class="btn btn-${style}"${attrs}>${text}</button>`;
         },
-        ArchitectBtn: (text, classListString='') => {
-            return `<div class="btn architect-btn p-4 ${classListString}"><span>${text}</span></div>`
-        }
+        ArchitectBtn: (text, classListString='', tag='div', attributes) => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
+            return `<${tag} class="btn architect-btn ${classListString}" ${temp_att}><span>${text}</span></${tag}>`
+        },
+        LightArchitectBtn: (text, classListString='', tag='div', attributes) => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
+            return `<${tag} class="btn light-architect-btn ${classListString}" ${temp_att}><span>${text}</span></${tag}>`
+        },
     }
 
     static Form = {

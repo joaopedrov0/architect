@@ -11,9 +11,9 @@ class Project {
         this.QualityAttributes = {};  // id: { id, name }
         // 1. Graus de intensidade incluídos como configuração, com valores pré-definidos.
         this.IntensityDegrees = {
-            '1': { id: '1', name: 'baixo' },
-            '2': { id: '2', name: 'médio' },
-            '3': { id: '3', name: 'alto' }
+            '1': { id: '1', name: 'Baixo' },
+            '2': { id: '2', name: 'Médio' },
+            '3': { id: '3', name: 'Alto' }
         };
     }
 

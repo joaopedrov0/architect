@@ -3,9 +3,63 @@
 // import { Render } from "./Render";
 // import { StorageManager } from "./StorageManager";
 
+document.addEventListener('click', function(event) {
+    const linkClicado = event.target.closest('a');
+
+    if (!linkClicado) {
+        return;
+    }
+
+    if (linkClicado.host !== window.location.host || linkClicado.pathname === window.location.pathname) {
+      return;
+    }
+
+    if (!linkClicado.classList.contains('project-card')){
+        return;
+    }
+    
+    event.preventDefault();
+
+    const destinoFinal = linkClicado.href;
+
+    console.log(`Atributo 'href': ${linkClicado.getAttribute('href')}`);
+    console.log(`Propriedade 'href' resolvida: ${destinoFinal}`);
+
+    // Faça sua operação aqui (ex: salvar no localStorage)
+    StorageManager.setCurrentProject(linkClicado.id)
+
+    // Redirecione com a certeza de que o caminho está correto.
+    window.location.href = destinoFinal;
+});
+
+class FormField {
+    constructor(id){
+        this.id = id
+        this.reference
+        this.value
+    }
+    sync(){
+        this.reference = document.querySelector(`#${this.id}`)
+        this.value = this.reference.value
+    }
+    clear(){
+        this.reference.value = ''
+        this.value = ''
+    }
+}
+
+const projectNameField = new FormField('project-name')
+const projectAuthorField = new FormField('project-author')
+
+function toggleModal(id){
+    let modal = document.querySelector(`#${id}`)
+    bootstrap.Modal.getOrCreateInstance(modal).toggle()
+}
+
 function CreateProject (name, author){
     const project = new Project(name, author, GetUUID())
     StorageManager.addProject(project)
+    RenderListOfProjects()
 }
 
 function GetUUID (){
@@ -17,11 +71,24 @@ function GetUUID (){
     }
 }
 
+
+function SubmitCreateProject(){
+    projectAuthorField.sync()
+    projectNameField.sync()
+    toggleModal('create-project-modal')
+    if (projectAuthorField.value && projectAuthorField){
+        CreateProject(projectNameField.value, projectAuthorField.value)
+    } else {
+        alert("Preencha todos os campos.")
+    }
+}
+
 function RenderCreateProjectModal(){
     const modalArea = document.querySelector('#modal-area')
 
     let footer = PageBuilder.Basics.ModalDismissButton()
-    footer += PageBuilder.Button.ArchitectBtn('Criar')
+    // footer += PageBuilder.Button.ArchitectBtn('Criar', 'p-3', 'button', {"type":"button"})
+    footer += PageBuilder.Button.LightArchitectBtn('Criar', '', 'button', {"type": "button","onclick": "SubmitCreateProject()"})
 
 
     modalArea.innerHTML = PageBuilder.Basics.ModalElement(
@@ -29,12 +96,12 @@ function RenderCreateProjectModal(){
         'Criar Projeto',
         PageBuilder.Component.ProjectAddFormContainer(
             'create-project-form',
-            PageBuilder.Form.TextInput('project-name', 'Nome do Projeto', 'project_name', 'Digite o nome do seu projeto...'),
+            PageBuilder.Form.TextInput('project-name', 'Nome do Projeto', 'project_name', 'Digite o nome do seu projeto...') +
+            PageBuilder.Form.TextInput('project-author', 'Autor(es)', 'project_author', 'Insira os autores do projeto aqui.'),
             ),
         footer
 
-
-)
+    )
 }
 
 function RenderImportProjectModal(){}
@@ -67,7 +134,7 @@ function RenderListOfProjects(){
     let projectsHTML = ""
     for (let project of projects){
         projectsHTML += PageBuilder.Basics.BasicElement('div', ['col-md-3', 'col-sm-6', 'col-12'], {},
-            PageBuilder.Basics.BasicElement('a', ['project-card', 'p-4'], {'href': `/project.html?id=${project.id}`},
+            PageBuilder.Basics.BasicElement('a', ['project-card', 'p-4'], {'id':project.id, 'href': '/project.html'},
                 PageBuilder.Basics.BasicElement('span', ['project-name'], {}, project.name)
             )
     )}
