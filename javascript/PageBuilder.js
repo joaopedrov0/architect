@@ -296,8 +296,8 @@ class PageBuilder {
          * @param {string} [placeholder] - Texto para a primeira opção desabilitada.
          * @returns {string} O HTML do campo select.
          */
-        Select: (id, label, formName, options, placeholder = 'Selecione...') => {
-            const optionsHtml = options.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
+        Select: (id, label, formName, options, placeholder = 'Selecione...', selectedValue = '') => {
+            const optionsHtml = options.map(opt => `<option value="${opt.id}" ${opt.id === selectedValue ? 'selected' : ''}>${opt.name}</option>`).join('');
             return `
             <div class="mb-3">
                 <label for="${id}" class="form-label">${label}</label>
@@ -365,7 +365,7 @@ class PageBuilder {
                     'Dificuldade': difficulty
                 })
                 ,
-                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': 'EditFunctionalRequirementModal()'})
+                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `EditFunctionalRequirementModal('${id}')`})
             )
             return temp
         },
@@ -376,7 +376,7 @@ class PageBuilder {
         PointOfView: () => {},
         ArchitecturalView: () => {},
 
-        ArtifactGroup: (id, title, artifactList) => {
+        ArtifactGroup: (id, title, artifactList, type) => {
 
             const counterElement = PageBuilder.Basics.BasicElement('span', ['artifact-counter'], {}, `Criados: ${artifactList.length}`)
 
@@ -397,7 +397,7 @@ class PageBuilder {
               <div class="collapse" id="${id}">
                 <ul class="list-group list-group-flush artifact-list">
                   ${artifactListHTML}
-                  <button class="btn architect-btn p-4" type="button"><span>Criar</span></button>
+                  <button class="btn architect-btn p-4" type="button" onclick="toggleEditor('${type}')" data-bs-toggle="modal" data-bs-target="#edit-modal"><span>Criar artefato</span></button>
                 </ul>
               </div>
             </div>
@@ -454,3 +454,5 @@ class PageBuilder {
 // );
 
 // console.log(myLayout)
+
+alert("O select do editor quando vai editar um artefato nao ta funcionando")

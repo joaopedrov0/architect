@@ -17,6 +17,26 @@ class Project {
         };
     }
 
+    static rebuild(projectObject) {
+        const project = new Project(projectObject.name, projectObject.author, projectObject.id);
+
+        project.created_at = projectObject.created_at;
+        project.updated_at = projectObject.updated_at;
+        
+        project.BusinessAttributes = projectObject.BusinessAttributes;
+        project.QualityAttributes = projectObject.QualityAttributes;
+        project.IntensityDegrees = projectObject.IntensityDegrees;
+
+        project.FunctionalRequirementManager.collection = projectObject.FunctionalRequirementManager.collection || {};
+        project.ArchitecturalRequirementManager.collection = projectObject.ArchitecturalRequirementManager.collection || {};
+        project.StakeholderManager.collection = projectObject.StakeholderManager.collection || {};
+        project.ArchitecturalScenarioManager.collection = projectObject.ArchitecturalScenarioManager.collection || {};
+        project.ArchitecturalDecisionManager.collection = projectObject.ArchitecturalDecisionManager.collection || {};
+        project.PointOfViewManager.collection = projectObject.PointOfViewManager.collection || {};
+        project.ArchitecturalViewManager.collection = projectObject.ArchitecturalViewManager.collection || {};
+        return project;
+    }
+
     _getNow() {
         const temp = new Date();
         const pad = (n) => n.toString().padStart(2, '0');
@@ -35,11 +55,12 @@ class Project {
     FunctionalRequirementManager = {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
-        add: (functionalRequirement, acceptanceCriteria, importance, difficulty) => {
+        add: (functionalRequirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
             const id = this._getID();
             this.FunctionalRequirementManager.collection[id] = {
                 id,
                 functionalRequirement,
+                measureMethod,
                 acceptanceCriteria,
                 importance,
                 difficulty
