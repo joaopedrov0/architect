@@ -64,6 +64,24 @@ class PageBuilder {
             return `<i class="bi ${idClass} ${sizeClass}"></i>`
         },
 
+        List: (dictionary) => {
+            let html = ''
+            for (let key in dictionary){
+                html += `<li class="list-group-item d-flex align-items-center">
+                <h5 class="m-0">${key}:</h5>
+                <p class="mb-0 ms-1">${dictionary[key]}</p>
+                </li>`
+            // <ul class="list-group list-group-flush">
+            //     <li class="list-group-item">An item</li>
+            //     <li class="list-group-item">A second item</li>
+            //     <li class="list-group-item">A third item</li>
+            //     <li class="list-group-item">A fourth item</li>
+            //     <li class="list-group-item">And a fifth one</li>
+            // </ul>
+            }
+            return PageBuilder.Basics.BasicElement('ul', ['list-group', 'list-group-flush'], {}, html)
+        },
+
         /**
          * Cria um componente Toast (notificação) do Bootstrap.
          * @param {string} id - O ID do toast.
@@ -144,7 +162,44 @@ class PageBuilder {
                 </div>
                 ${footerHtml}
             </div>`;
+        },
+
+        /**
+         * Cria um card com cabeçalho colapsável (estilo acordeão).
+         * Clicar no cabeçalho exibe ou oculta o corpo e o rodapé.
+         * @param {string} id - Um ID único para o card, usado para o controle do colapso.
+         * @param {string} title - O texto do cabeçalho.
+         * @param {string} children - O conteúdo do corpo do card (que será ocultado/exibido).
+         * @param {string} [footer] - Opcional, conteúdo do rodapé (também será ocultado/exibido).
+         * @param {boolean} [startVisible=false] - Define se o card deve iniciar expandido.
+         * @returns {string} O HTML do card colapsável.
+         */
+        Collapse: (id, title, children, footer = '', startVisible = false) => {
+            const collapseId = `collapse-${id}`;
+            const showClass = startVisible ? 'show' : '';
+            const collapsedClass = startVisible ? '' : 'collapsed';
+            const ariaExpanded = startVisible ? 'true' : 'false';
+
+            const footerHtml = footer ? `<div class="card-footer">${footer}</div>` : '';
+
+            return `
+            <div class="card mb-3">
+                <div class="card-header p-0" id="heading-${id}">
+                    <h2 class="mb-0">
+                        <button class="btn w-100 text-start p-3 ${collapsedClass}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${ariaExpanded}" aria-controls="${collapseId}">
+                            ${title}
+                        </button>
+                    </h2>
+                </div>
+                <div id="${collapseId}" class="collapse ${showClass}" aria-labelledby="heading-${id}">
+                    <div class="card-body">
+                        ${children}
+                    </div> 
+                    ${footerHtml}
+                </div>
+            </div>`;
         }
+    
     }
     
     static Button = {
@@ -180,6 +235,15 @@ class PageBuilder {
             }
             return `<${tag} class="btn light-architect-btn ${classListString}" ${temp_att}><span>${text}</span></${tag}>`
         },
+        InlineBtn: (text, classListString='', tag='div', attributes) => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
+            return `<${tag} class="btn inline-btn ${classListString}" ${temp_att}><span>${text}</span></${tag}>`
+        }
     }
 
     static Form = {
@@ -291,7 +355,20 @@ class PageBuilder {
     }
 
     static Component = {
-        FunctionalRequirement: () => {},
+        FunctionalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
+            let temp = ''
+            temp += PageBuilder.Card.Collapse(id, `${id} - ${requirement}`,
+                PageBuilder.Basics.List({
+                    'Método de Medição': measureMethod,
+                    'Critério de Aceitação': acceptanceCriteria,
+                    'Importância': importance,
+                    'Dificuldade': difficulty
+                })
+                ,
+                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': 'EditFunctionalRequirementModal()'})
+            )
+            return temp
+        },
         ArchitecturalRequirement: () => {},
         Stakeholder: () => {},
         ArchitecturalScenario: () => {},
@@ -299,19 +376,19 @@ class PageBuilder {
         PointOfView: () => {},
         ArchitecturalView: () => {},
 
-        ArtifactGroup: (id, title, artifactList, counter) => {
+        ArtifactGroup: (id, title, artifactList) => {
 
-            const counterElement = PageBuilder.Basics.BasicElement('span', ['artifact-counter'], {}, `Criados: ${counter}`)
+            const counterElement = PageBuilder.Basics.BasicElement('span', ['artifact-counter'], {}, `Criados: ${artifactList.length}`)
 
             let artifactListHTML = ''
 
             for (let artifact of artifactList){
-                artifactListHTML += PageBuilder.Basics.BasicElement('li', ['list-group-item'], {}, artifact)
+                artifactListHTML += PageBuilder.Basics.BasicElement('li', ['list-group-item', 'p-0'], {}, artifact)
             }
 
             let html = `
             <div class="col-12 d-grid">
-              <button class="btn settings-btn" type="button" data-bs-toggle="collapse"
+              <button class="btn settings-btn d-flex flex-column align-items-center" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${id}" aria-expanded="false" aria-controls="${id}">
                 <h3 class="text-lg-center">${title}</h3>
                 <i class="bi bi-chevron-down"></i>
@@ -320,7 +397,7 @@ class PageBuilder {
               <div class="collapse" id="${id}">
                 <ul class="list-group list-group-flush artifact-list">
                   ${artifactListHTML}
-                  <button class="btn architect-btn p-4" type="button"><span>Editar</span></button>
+                  <button class="btn architect-btn p-4" type="button"><span>Criar</span></button>
                 </ul>
               </div>
             </div>
@@ -334,6 +411,14 @@ class PageBuilder {
             <div>
                 <form id="${formId}">${formChildren}</form>
             </div>`;
+        },
+
+        ArtifactEditFormContainer: (formId, formChildren) => {
+            return `
+            <div>
+                <form id="${formId}">${formChildren}</form>
+            </div>
+            `
         }
     }
 }

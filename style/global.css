@@ -5,6 +5,11 @@ body{
     color: var(--text-color);
 }
 
+main{
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
 nav {
     background-color: var(--dark-bg);
 }
@@ -93,5 +98,14 @@ i{
 }
 
 button.navbar-toggler span.navbar-toggler-icon{
+    color: var(--khaki);
+}
+
+.card .card-header, .card .card-footer{
+    background: var(--dark-bg);
+    color: var(--khaki);
+}
+
+.card .card-header h2 button{
     color: var(--khaki);
 }
