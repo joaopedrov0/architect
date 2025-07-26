@@ -296,12 +296,26 @@ class PageBuilder {
          * @param {string} [placeholder] - Texto para a primeira opção desabilitada.
          * @returns {string} O HTML do campo select.
          */
-        Select: (id, label, formName, options, placeholder = 'Selecione...', selectedValue = '') => {
-            const optionsHtml = options.map(opt => `<option value="${opt.id}" ${opt.id === selectedValue ? 'selected' : ''}>${opt.name}</option>`).join('');
+        Select: (id, label, formName, options, placeholder = 'Selecione...', attributes, selectedValue = '') => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
+            
+            let optionsHtml = ''
+            
+            for(let opt in options){
+                let isSelected = options[opt].id == selectedValue ? 'selected' : ''
+                console.log(`if ${options[opt].id} == ${selectedValue}: isSelected = ${isSelected}`)
+
+                optionsHtml += `<option value="${options[opt].id}" ${isSelected}>${options[opt].name}</option>`;
+            }
             return `
             <div class="mb-3">
                 <label for="${id}" class="form-label">${label}</label>
-                <select class="form-select" id="${id}" name="${formName}">
+                <select class="form-select" id="${id}" name="${formName}" ${temp_att}>
                     <option selected disabled value="">${placeholder}</option>
                     ${optionsHtml}
                 </select>

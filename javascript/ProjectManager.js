@@ -140,6 +140,8 @@ function EditFunctionalRequirementModal(id){
         difficulty: ''
     }
 
+    console.dir(currentArtifact)
+
     let intensityDegrees = getIntensityDegrees()
     let content = PageBuilder.Component.ArtifactEditFormContainer('edit-funcreq-form', 
         PageBuilder.Form.TextInput('rf-id', 'ID do Requisito Funcional', 'rf_id', 'Criando um novo...', id, {"readonly": true}) +

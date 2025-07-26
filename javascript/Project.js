@@ -72,9 +72,9 @@ class Project {
             delete this.FunctionalRequirementManager.collection[id];
             this._updateTimestamp();
         },
-        update: (id, data) => {
+        update: (id, functionalRequirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
             if (this.FunctionalRequirementManager.collection[id]) {
-                this.FunctionalRequirementManager.collection[id] = { ...this.FunctionalRequirementManager.collection[id], ...data };
+                this.FunctionalRequirementManager.collection[id] = { id, functionalRequirement, measureMethod, acceptanceCriteria, importance, difficulty };
                 this._updateTimestamp();
                 return this.FunctionalRequirementManager.collection[id];
             }
