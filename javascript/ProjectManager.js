@@ -40,6 +40,10 @@ const submittionHandlers = {
     'architectural-decision': function SubmitArchitecturalDecision(){},
     'point-of-view': function SubmitPointOfView(){},
     'architectural-view': function SubmitArchitecturalView(){},
+
+    'intensity-degree': function SubmitIntensityDegree(){},
+    'quality-attribute': function SubmitQualityAttribute(){},
+    'business-attribute': function SubmitBusinessAttribute(){},
 }
 const modalHandlers = {
     'functional-requirement': EditFunctionalRequirementModal,
@@ -49,11 +53,21 @@ const modalHandlers = {
     'architectural-decision': EditArchitecturalDecisionModal,
     'point-of-view': EditPointOfViewModal,
     'architectural-view': EditArchitecturalViewModal,
+
+    'intensity-degree': EditIntensityDegree,
+    'quality-attribute': EditQualityAttribute,
+    'business-attribute': EditBusinessAttribute,
 }
 
 function toggleEditor(type, id=''){
-    modalHandlers[type](id);
+    const { name, content } = modalHandlers[type](id);
     currentArtifactType = type
+    RenderEditModal(content)
+    if(id){
+        RenderTitleModal(`Editando ${name}`)
+    } else {
+        RenderTitleModal(`Criando ${name}`)
+    }
 }
 
 function exportJson(){
@@ -151,12 +165,9 @@ function EditFunctionalRequirementModal(id){
         PageBuilder.Form.Select('rf-importance-degree', 'Importância', 'rf_importance_degree', intensityDegrees, 'alto, médio...', {"required": true}, currentArtifact.importance) +
         PageBuilder.Form.Select('rf-difficulty-degree', 'Dificuldade de obtenção', 'rf_difficulty_degree', intensityDegrees, 'alto, médio...', {"required": true}, currentArtifact.difficulty) 
     )
-    RenderEditModal(content)
-    if(id){
-        RenderTitleModal('Editando Requisito Funcional')
-    } else {
-        RenderTitleModal('Criando Requisito Funcional')
-    }
+    
+
+    return {name: "Requisito Funcional", content}
 }
 function EditArchitecturalRequirementModal(id){}
 function EditStakeholderModal(id){}
@@ -164,6 +175,9 @@ function EditArchitecturalScenarioModal(id){}
 function EditArchitecturalDecisionModal(id){}
 function EditPointOfViewModal(id){}
 function EditArchitecturalViewModal(id){}
+function EditIntensityDegree(id){}
+function EditQualityAttribute(id){}
+function EditBusinessAttribute(id){}
 
 function RenderArtifacts(){
     let functionalRequirements = project.FunctionalRequirementManager.getAll()
@@ -195,9 +209,37 @@ function initializeEditModal(){
         `)
 }
 
+function RenderSettings(){
+    let intensityDegreeList = document.querySelector('#graus-de-intensidade ul.settings-list')
+    let qualityAttributeList = document.querySelector('#atributos-de-qualidade ul.settings-list')
+    let businessAttributeList = document.querySelector('#atributos-de-negocio ul.settings-list')
+
+    intensityDegreeList.innerHTML = ''
+    qualityAttributeList.innerHTML = ''
+    businessAttributeList.innerHTML = ''
+
+    console.dir(`entrou no rendersettings, o project ta assim: ${project.IntensityDegrees}`)
+
+    for(let iDeg in project.IntensityDegrees){
+        console.log(iDeg)
+        intensityDegreeList.innerHTML += `<li class="list-group-item">${project.IntensityDegrees[iDeg].name}</li>`
+    }
+    for(let qAtt in project.QualityAttributes){
+        console.log(qAtt)
+        qualityAttributeList.innerHTML += `<li class="list-group-item">${project.QualityAttributes[qAtt]}</li>`
+    }
+    for(let qBus in project.BusinessAttributes){
+        console.log(qBus)
+        businessAttributeList.innerHTML += `<li class="list-group-item">${project.BusinessAttributes[qBus]}</li>`
+    }
+
+    
+}
+
 initializeEditModal()
 RenderArtifacts()
 RenderEditModal()
+RenderSettings()
 initializeProjectSettings()
 
 // ! The editor will include an hidden field with the artifact ID, in the submittion, if the ID is present, it will update the artifact, otherwise it will create a new one

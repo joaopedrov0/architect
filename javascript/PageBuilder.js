@@ -371,6 +371,7 @@ class PageBuilder {
     static Component = {
         FunctionalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
             let temp = ''
+            let categoryName = 'functional-requirement'
             temp += PageBuilder.Card.Collapse(id, `${id} - ${requirement}`,
                 PageBuilder.Basics.List({
                     'Método de Medição': measureMethod,
@@ -379,7 +380,7 @@ class PageBuilder {
                     'Dificuldade': difficulty
                 })
                 ,
-                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `EditFunctionalRequirementModal('${id}')`})
+                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('${categoryName}', '${id}')`})
             )
             return temp
         },
