@@ -7,8 +7,16 @@ class Project {
         this.id = id
 
         // Project Settings Manager (key:value structure)
-        this.BusinessAttributes = {}; // id: { id, name }
-        this.QualityAttributes = {};  // id: { id, name }
+        this.BusinessAttributes = {
+            '1': 'business attribute 1',
+            '2': 'business attribute 2',
+            '3': 'business attribute 3'
+        }; // id: { id, name }
+        this.QualityAttributes = {
+            '1': 'quality attribute 1',
+            '2': 'quality attribute 2',
+            '3': 'quality attribute 3'
+        };  // id: { id, name }
         // 1. Graus de intensidade incluídos como configuração, com valores pré-definidos.
         this.IntensityDegrees = {
             '1': { id: '1', name: 'Baixo' },
