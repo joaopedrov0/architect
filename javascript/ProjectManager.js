@@ -35,8 +35,41 @@ const submittionHandlers = {
         }
     },
     'architectural-requirement': function SubmitArchitecturalRequirement(){},
-    'stakeholder': function SubmitStakeholder(){},
-    'architectural-scenario': function SubmitArchitecturalScenario(){},
+    'stakeholder': function SubmitStakeholder(){
+        let form = document.querySelector('#edit-stakeholder-form')
+        let id = form.querySelector('#stakeholder-id').value
+        let name = form.querySelector('#stakeholder-name').value
+        let interest = form.querySelector('#stakeholder-interest').value
+
+        if (id) {
+            project.StakeholderManager.update(id, name, interest)
+        } else {
+            project.StakeholderManager.add(name, interest)
+        }
+    },
+    'architectural-scenario': function SubmitArchitecturalScenario(){
+        let form = document.querySelector('#edit-architectural-scenario-form')
+        let id = form.querySelector('#architectural-scenario-id').value
+        let description = form.querySelector('#architectural-scenario-description').value
+        let importance = form.querySelector('#architectural-scenario-importance').value
+        let qualityAttributes = form.querySelectorAll('input[name="architectural_scenario_quality_attributes"]:checked')
+        let businessAttributes = form.querySelectorAll('input[name="architectural_scenario_business_attributes"]:checked')
+
+        console.dir(`qualityAttributes: ${qualityAttributes}`)
+        console.dir(`businessAttributes: ${businessAttributes}`)
+
+        let qualityAttributesIds = Array.from(qualityAttributes).map(el => el.value)
+        let businessAttributesIds = Array.from(businessAttributes).map(el => el.value)
+
+        console.log(`qualityAttributesIds: ${qualityAttributesIds}`)
+        console.log(`businessAttributesIds: ${businessAttributesIds}`)
+
+        if (id) {
+            project.ArchitecturalScenarioManager.update(id, description, importance, qualityAttributesIds, businessAttributesIds)
+        } else {
+            project.ArchitecturalScenarioManager.add(description, importance, qualityAttributesIds, businessAttributesIds)
+        }
+    },
     'architectural-decision': function SubmitArchitecturalDecision(){},
     'point-of-view': function SubmitPointOfView(){},
     'architectural-view': function SubmitArchitecturalView(){},
@@ -54,9 +87,9 @@ const modalHandlers = {
     'point-of-view': EditPointOfViewModal,
     'architectural-view': EditArchitecturalViewModal,
 
-    'intensity-degree': EditIntensityDegree,
-    'quality-attribute': EditQualityAttribute,
-    'business-attribute': EditBusinessAttribute,
+    'intensity-degree': EditIntensityDegreeModal,
+    'quality-attribute': EditQualityAttributeModal,
+    'business-attribute': EditBusinessAttributeModal,
 }
 
 function toggleEditor(type, id=''){
@@ -170,35 +203,87 @@ function EditFunctionalRequirementModal(id){
     return {name: "Requisito Funcional", content}
 }
 function EditArchitecturalRequirementModal(id){}
-function EditStakeholderModal(id){}
-function EditArchitecturalScenarioModal(id){}
+function EditStakeholderModal(id){
+    currentArtifactType = 'stakeholder'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.StakeholderManager.get(id) || {
+        name: '',
+        interest: ''
+    }
+
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-stakeholder-form',
+        PageBuilder.Form.TextInput('stakeholder-id', 'ID do Stakeholder', 'stakeholder_id', 'Criando um novo...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('stakeholder-name', 'Nome do Stakeholder', 'stakeholder_name', 'Nome do Stakeholder', currentArtifact.name, {"required": true}) +
+        PageBuilder.Form.TextInput('stakeholder-interest', 'Interesse do Stakeholder', 'stakeholder_interest', 'Interesse do Stakeholder', currentArtifact.interest, {"required": true})
+    )
+    return {name: "Stakeholder", content}
+}
+function EditArchitecturalScenarioModal(id){
+    currentArtifactType = 'architectural-scenario'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.ArchitecturalScenarioManager.get(id) || {
+        description: '',
+        importance: '',
+        qualityAttributes: [],
+        businessAttributes: []
+    }
+
+    let qualityAttributes = []
+    for (let qAtt in project.QualityAttributes){
+        qualityAttributes.push({id: qAtt, value: qAtt, text: project.QualityAttributes[qAtt]})
+    }
+    let businessAttributes = []
+    for (let bAtt in project.BusinessAttributes){
+        businessAttributes.push({id: bAtt, value: bAtt, text: project.BusinessAttributes[bAtt]})
+    }
+
+
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-architectural-scenario-form',
+        PageBuilder.Form.TextInput('architectural-scenario-id', 'ID do Cenário Arquitetural', 'architectural_scenario_id', 'Criando um novo...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('architectural-scenario-description', 'Descrição do Cenário Arquitetural', 'architectural_scenario_description', 'Descrição do cenário arquitetural', currentArtifact.description, {"required": true}) +
+        PageBuilder.Form.Select('architectural-scenario-importance', 'Importância do Cenário', 'architectural_scenario_importance', project.IntensityDegrees, 'Importância do cenário', {"required": true}, currentArtifact.importance) +
+        PageBuilder.Form.CheckBox('architectural-scenario-quality-attributes', 'Atributos de Qualidade', 'architectural_scenario_quality_attributes', qualityAttributes, currentArtifact.qualityAttributes) +
+        PageBuilder.Form.CheckBox('architectural-scenario-business-attributes', 'Atributos de Negócio', 'architectural_scenario_business_attributes', businessAttributes, currentArtifact.businessAttributes)
+    )
+    return {name: "Cenário Arquitetural", content}
+}
 function EditArchitecturalDecisionModal(id){}
 function EditPointOfViewModal(id){}
 function EditArchitecturalViewModal(id){}
-function EditIntensityDegree(id){}
-function EditQualityAttribute(id){}
-function EditBusinessAttribute(id){}
+function EditIntensityDegreeModal(id){}
+function EditQualityAttributeModal(id){}
+function EditBusinessAttributeModal(id){}
 
 function RenderArtifacts(){
-    let functionalRequirements = project.FunctionalRequirementManager.getAll()
-    let processedFunctionalRequirements = []
-    for (artifact of functionalRequirements){
-        processedFunctionalRequirements.push(PageBuilder.Component.FunctionalRequirement(
-            artifact.id,
-            artifact.functionalRequirement,
-            artifact.measureMethod,
-            artifact.acceptanceCriteria,
-            artifact.importance,
-            artifact.difficulty
-        ))
-    }
-
+    let processedFunctionalRequirements = processFunctionalRequirements()
+    let processedStakeholders = processStakeholders()
+    
     artifactArea.innerHTML = ''
 
+    //! Requisitos funcionais
     artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('functional-requirements', 'Requisitos Funcionais', [
         PageBuilder.Component.FunctionalRequirement('RF1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name),
         ...processedFunctionalRequirements
     ], 'functional-requirement')
+
+    //! Stakeholders
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('stakeholders', 'Stakeholders', [
+        PageBuilder.Component.Stakeholder('S1', 'Cliente', 'Interesse do cliente'),
+        PageBuilder.Component.Stakeholder('S2', 'Desenvolvedor', 'Interesse do desenvolvedor'),
+        PageBuilder.Component.Stakeholder('S3', 'Gerente de Projeto', 'Interesse do gerente de projeto'),
+        ...processedStakeholders
+    ], 'stakeholder')
+
+    //! Cenários Arquiteturais
+    let processedArchitecturalScenarios = processArchitecturalScenarios()
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-scenarios', 'Cenários Arquiteturais', [
+        PageBuilder.Component.ArchitecturalScenario('AS1', 'Cenário 1', project.IntensityDegrees[3].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade']),
+        ...processedArchitecturalScenarios
+    ], 'architectural-scenario')
 
 }
 
@@ -235,6 +320,60 @@ function RenderSettings(){
 
     
 }
+
+//! Artifacts Processors
+function processFunctionalRequirements(){
+    let functionalRequirements = project.FunctionalRequirementManager.getAll()
+    let processedFunctionalRequirements = []
+    for (artifact of functionalRequirements){
+        processedFunctionalRequirements.push(PageBuilder.Component.FunctionalRequirement(
+            artifact.id,
+            artifact.functionalRequirement,
+            artifact.measureMethod,
+            artifact.acceptanceCriteria,
+            artifact.importance,
+            artifact.difficulty
+        ))
+    }
+    return processedFunctionalRequirements
+}
+function processStakeholders(){
+    let stakeholders = project.StakeholderManager.getAll()
+    let processedStakeholders = []
+    for (artifact of stakeholders){
+        processedStakeholders.push(PageBuilder.Component.Stakeholder(
+            artifact.id,
+            artifact.name,
+            artifact.interest
+        ))
+    }
+    return processedStakeholders
+}
+function processArchitecturalScenarios(){
+    let architecturalScenarios = project.ArchitecturalScenarioManager.getAll()
+    let processedArchitecturalScenarios = []
+    for (artifact of architecturalScenarios){
+        processedArchitecturalScenarios.push(PageBuilder.Component.ArchitecturalScenario(
+            artifact.id,
+            artifact.description,
+            artifact.importance,
+            project.translateQualityAttributes(artifact.qualityAttributes),
+            project.translateBusinessAtributes(artifact.businessAttributes)
+        ))
+    }
+    return processedArchitecturalScenarios
+}
+function ArchitecturalRequirementProcessor(){}
+function ArchitecturalDecisionProcessor(){
+    
+}
+function PointOfViewProcessor(){
+    
+}
+function ArchitecturalViewProcessor(){
+}
+
+
 
 initializeEditModal()
 RenderArtifacts()

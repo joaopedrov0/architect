@@ -59,6 +59,13 @@ class Project {
         this.updated_at = this._getNow();
     }
 
+    translateQualityAttributes(idList){
+        return idList.map(id => this.QualityAttributes[id]).filter(item => item);
+    }
+    translateBusinessAtributes(idList){
+        return idList.map(id => this.BusinessAttributes[id]).filter(item => item);
+    }
+
     // Managers
     FunctionalRequirementManager = {
         collection: {},
@@ -162,9 +169,9 @@ class Project {
             delete this.StakeholderManager.collection[id];
             this._updateTimestamp();
         },
-        update: (id, data) => {
+        update: (id, name, interest) => {
             if (this.StakeholderManager.collection[id]) {
-                this.StakeholderManager.collection[id] = { ...this.StakeholderManager.collection[id], ...data };
+                this.StakeholderManager.collection[id] = { ...this.StakeholderManager.collection[id], name, interest };
                 this._updateTimestamp();
                 return this.StakeholderManager.collection[id];
             }
@@ -177,14 +184,14 @@ class Project {
     ArchitecturalScenarioManager = {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
-        add: (description, importance, qualityAttributesIds, businessAttributesIds) => {
+        add: (description, importance, qualityAttributes, businessAttributes) => {
             const id = this._getID();
             this.ArchitecturalScenarioManager.collection[id] = {
                 id,
                 description,
                 importance,
-                qualityAttributes: qualityAttributesIds || [],
-                businessAttributes: businessAttributesIds || []
+                qualityAttributes: qualityAttributes || [],
+                businessAttributes: businessAttributes || []
             };
             this._updateTimestamp();
             return this.ArchitecturalScenarioManager.collection[id];
@@ -193,9 +200,9 @@ class Project {
             delete this.ArchitecturalScenarioManager.collection[id];
             this._updateTimestamp();
         },
-        update: (id, data) => {
+        update: (id, description, importance, qualityAttributes, businessAttributes) => {
             if (this.ArchitecturalScenarioManager.collection[id]) {
-                this.ArchitecturalScenarioManager.collection[id] = { ...this.ArchitecturalScenarioManager.collection[id], ...data };
+                this.ArchitecturalScenarioManager.collection[id] = { ...this.ArchitecturalScenarioManager.collection[id], description, importance, qualityAttributes, businessAttributes };
                 this._updateTimestamp();
                 return this.ArchitecturalScenarioManager.collection[id];
             }

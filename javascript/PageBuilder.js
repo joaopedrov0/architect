@@ -82,6 +82,14 @@ class PageBuilder {
             return PageBuilder.Basics.BasicElement('ul', ['list-group', 'list-group-flush'], {}, html)
         },
 
+        ListClear: (list) => {
+            let html = ''
+            for (let item of list){
+                html += `<li class="list-group-item d-flex align-items-center">${item}</li>`
+            }
+            return PageBuilder.Basics.BasicElement('ul', ['list-group', 'list-group-flush'], {}, html)
+        },
+
         /**
          * Cria um componente Toast (notificação) do Bootstrap.
          * @param {string} id - O ID do toast.
@@ -276,15 +284,15 @@ class PageBuilder {
          * @param {Object[]} options - Array de opções, ex: [{ id: 'opt1', value: 'val1', text: 'Opção 1' }].
          * @returns {string} O HTML do grupo de checkboxes.
          */
-        CheckBox: (label, formName, options) => {
+        CheckBox: (id, label, formName, options, marked=[]) => {
             const optionsHtml = options.map(opt => `
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="${opt.value}" id="${opt.id}" name="${formName}">
-                    <label class="form-check-label" for="${opt.id}">
+                <div class="form-check" id="${id}-${opt.id}">
+                    <input class="form-check-input" type="checkbox" value="${opt.value}" id="${id}-${opt.id}-option" name="${formName}" ${marked.includes(opt.id) ? 'checked' : ''}>
+                    <label class="form-check-label" for="${id}-${opt.id}-option">
                         ${opt.text}
                     </label>
                 </div>`).join('');
-            return `<div class="mb-3"><label class="form-label">${label}</label>${optionsHtml}</div>`;
+            return `<div class="mb-3"><div class="form-label">${label}</div>${optionsHtml}</div>`;
         },
 
         /**
@@ -369,24 +377,52 @@ class PageBuilder {
     }
 
     static Component = {
-        FunctionalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
-            let temp = ''
-            let categoryName = 'functional-requirement'
-            temp += PageBuilder.Card.Collapse(id, `${id} - ${requirement}`,
-                PageBuilder.Basics.List({
-                    'Método de Medição': measureMethod,
-                    'Critério de Aceitação': acceptanceCriteria,
-                    'Importância': importance,
-                    'Dificuldade': difficulty
-                })
-                ,
+        ChildrenList: (title, content) => {
+            return PageBuilder.Card.Basic(title, 
+                PageBuilder.Basics.ListClear(content),
+            )
+        },
+        ArtifactBase: (categoryName, id, title, content, ChildrenLists=[]) => {
+            return PageBuilder.Card.Collapse(id, `${id} - ${title}`,
+                PageBuilder.Basics.List(content) +
+                ChildrenLists.join(''),
                 PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('${categoryName}', '${id}')`})
             )
-            return temp
+        },
+        FunctionalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
+            // let temp = ''
+            // let categoryName = 'functional-requirement'
+            // temp += PageBuilder.Card.Collapse(id, `${id} - ${requirement}`,
+            //     PageBuilder.Basics.List({
+            //         'Método de Medição': measureMethod,
+            //         'Critério de Aceitação': acceptanceCriteria,
+            //         'Importância': importance,
+            //         'Dificuldade': difficulty
+            //     })
+            //     ,
+            //     PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('${categoryName}', '${id}')`})
+            // )
+            return this.Component.ArtifactBase('functional-requirement', id, requirement, {
+                'Método de Medição': measureMethod,
+                'Critério de Aceitação': acceptanceCriteria,
+                'Importância': importance,
+                'Dificuldade': difficulty
+            })
         },
         ArchitecturalRequirement: () => {},
-        Stakeholder: () => {},
-        ArchitecturalScenario: () => {},
+        Stakeholder: (id, name, interest) => {
+            return this.Component.ArtifactBase('stakeholder', id, name, {
+                'Interesse': interest
+            })
+        },
+        ArchitecturalScenario: (id, description, importance, qualityAttributesNames, businessAttributesNames) => {
+            return this.Component.ArtifactBase('architectural-scenario', id, description, {
+                'Importância': importance,
+            }, [
+                this.Component.ChildrenList('Atributos de Qualidade', qualityAttributesNames),
+                this.Component.ChildrenList('Atributos de Negócio', businessAttributesNames)
+            ])
+        },
         ArchitecturalDecision: () => {},
         PointOfView: () => {},
         ArchitecturalView: () => {},
@@ -402,7 +438,7 @@ class PageBuilder {
             }
 
             let html = `
-            <div class="col-12 d-grid">
+            <div class="col-12 d-grid mb-4">
               <button class="btn settings-btn d-flex flex-column align-items-center" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${id}" aria-expanded="false" aria-controls="${id}">
                 <h3 class="text-lg-center">${title}</h3>
