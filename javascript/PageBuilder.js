@@ -469,4 +469,4 @@ class PageBuilder {
 
 // console.log(myLayout)
 
-alert("O select do editor quando vai editar um artefato nao ta funcionando")
+// alert("O select do editor quando vai editar um artefato nao ta funcionando")
