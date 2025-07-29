@@ -122,9 +122,9 @@ class Project {
             delete this.ArchitecturalRequirementManager.collection[id];
             this._updateTimestamp();
         },
-        update: (id, data) => {
+        update: (id, architecturalRequirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributes, businessAttributes, architecturalScenarios) => {
             if (this.ArchitecturalRequirementManager.collection[id]) {
-                this.ArchitecturalRequirementManager.collection[id] = { ...this.ArchitecturalRequirementManager.collection[id], ...data };
+                this.ArchitecturalRequirementManager.collection[id] = { ...this.ArchitecturalRequirementManager.collection[id], architecturalRequirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributes, businessAttributes, architecturalScenarios };
                 this._updateTimestamp();
                 return this.ArchitecturalRequirementManager.collection[id];
             }

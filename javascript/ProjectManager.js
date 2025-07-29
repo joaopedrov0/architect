@@ -34,7 +34,28 @@ const submittionHandlers = {
             project.FunctionalRequirementManager.add(functionalRequirement, measureMethod, acceptanceCriteria, importance, difficulty)
         }
     },
-    'architectural-requirement': function SubmitArchitecturalRequirement(){},
+    'architectural-requirement': function SubmitArchitecturalRequirement(){
+        let form = document.querySelector('#edit-architectural-requirement-form')
+        let id = form.querySelector('#ar-id').value
+        let architecturalRequirement = form.querySelector('#ar-description').value
+        let measureMethod = form.querySelector('#ar-measure').value
+        let acceptanceCriteria = form.querySelector('#ar-acceptable').value
+        let importance = form.querySelector('#ar-importance-degree').value
+        let difficulty = form.querySelector('#ar-difficulty-degree').value
+        let qualityAttributes = form.querySelectorAll('input[name="ar_quality_attributes"]:checked')
+        let businessAttributes = form.querySelectorAll('input[name="ar_business_attributes"]:checked')
+        let architecturalScenarios = form.querySelectorAll('input[name="ar_architectural_scenarios"]:checked')
+
+        let qualityAttributesIds = Array.from(qualityAttributes).map(el => el.value)
+        let businessAttributesIds = Array.from(businessAttributes).map(el => el.value)
+        let architecturalScenariosIds = Array.from(architecturalScenarios).map(el => el.value)
+
+        if (id) {
+            project.ArchitecturalRequirementManager.update(id, architecturalRequirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributesIds, businessAttributesIds, architecturalScenariosIds)
+        } else {
+            project.ArchitecturalRequirementManager.add(architecturalRequirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributesIds, businessAttributesIds, architecturalScenariosIds)
+        }
+    },
     'stakeholder': function SubmitStakeholder(){
         let form = document.querySelector('#edit-stakeholder-form')
         let id = form.querySelector('#stakeholder-id').value
@@ -202,7 +223,52 @@ function EditFunctionalRequirementModal(id){
 
     return {name: "Requisito Funcional", content}
 }
-function EditArchitecturalRequirementModal(id){}
+function EditArchitecturalRequirementModal(id){
+    currentArtifactType = 'architectural-requirement'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.ArchitecturalRequirementManager.get(id) || {
+        architecturalRequirement: '',
+        measureMethod: '',
+        acceptanceCriteria: '',
+        importance: '',
+        difficulty: '',
+        qualityAttributes: [],
+        businessAttributes: [],
+        architecturalScenarios: []
+    }
+
+    let qualityAttributes = []
+    for (let qAtt in project.QualityAttributes){
+        qualityAttributes.push({id: qAtt, value: qAtt, text: project.QualityAttributes[qAtt]})
+    }
+    let businessAttributes = []
+    for (let bAtt in project.BusinessAttributes){
+        businessAttributes.push({id: bAtt, value: bAtt, text: project.BusinessAttributes[bAtt]})
+    }
+
+    let architecturalScenarios = []
+    for (let as in project.ArchitecturalScenarioManager.collection){
+        const { id, description } = project.ArchitecturalScenarioManager.collection[as]
+        architecturalScenarios.push({id, value: id, text: description})
+    }
+
+    let intensityDegrees = getIntensityDegrees()
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-architectural-requirement-form',
+        PageBuilder.Form.TextInput('ar-id', 'ID do Requisito Arquitetural', 'ar_id', 'Criando um novo...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('ar-description', 'Descrição do Requisito Arquitetural', 'ar_description', 'O sistema deve...', currentArtifact.architecturalRequirement, {"required": true}) +
+        PageBuilder.Form.TextInput('ar-measure', 'Forma de Medição', 'ar_measure', 'medindo...', currentArtifact.measureMethod, {"required": true}) +
+        PageBuilder.Form.TextInput('ar-acceptable', 'Critério de aceitação', 'ar_acceptable', 'métrica deve estar acima de...', currentArtifact.acceptanceCriteria, {"required": true}) +
+        PageBuilder.Form.Select('ar-importance-degree', 'Importância', 'ar_importance_degree', intensityDegrees, 'alto, médio...', {"required": true}, currentArtifact.importance) +
+        PageBuilder.Form.Select('ar-difficulty-degree', 'Dificuldade de obtenção', 'ar_difficulty_degree', intensityDegrees, 'alto, médio...', {"required": true}, currentArtifact.difficulty) +
+        PageBuilder.Form.CheckBox('ar-quality-attributes', 'Atributos de Qualidade', 'ar_quality_attributes', qualityAttributes, currentArtifact.qualityAttributes) +
+        PageBuilder.Form.CheckBox('ar-business-attributes', 'Atributos de Negócio', 'ar_business_attributes', businessAttributes, currentArtifact.businessAttributes) +
+        PageBuilder.Form.CheckBox('ar-architectural-scenarios', 'Cenários Arquiteturais', 'ar_architectural_scenarios', architecturalScenarios, currentArtifact.architecturalScenarios)
+    )
+
+    return {name: "Requisito Arquitetural", content}
+}
 function EditStakeholderModal(id){
     currentArtifactType = 'stakeholder'
 
@@ -285,6 +351,13 @@ function RenderArtifacts(){
         ...processedArchitecturalScenarios
     ], 'architectural-scenario')
 
+    //! Requisitos Arquiteturais
+    let processedArchitecturalRequirements = ArchitecturalRequirementProcessor()
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-requirements', 'Requisitos Arquiteturais', [
+        PageBuilder.Component.ArchitecturalRequirement('AR1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade'], ['AS1']),
+        ...processedArchitecturalRequirements
+    ], 'architectural-requirement')
+
 }
 
 function initializeEditModal(){
@@ -363,7 +436,29 @@ function processArchitecturalScenarios(){
     }
     return processedArchitecturalScenarios
 }
-function ArchitecturalRequirementProcessor(){}
+function ArchitecturalRequirementProcessor(){
+    let architecturalRequirements = project.ArchitecturalRequirementManager.getAll()
+    let processedArchitecturalRequirements = []
+
+    //! Atualizar depois
+    let architecturalDecisions = []
+
+    for (artifact of architecturalRequirements){
+        processedArchitecturalRequirements.push(PageBuilder.Component.ArchitecturalRequirement(
+            artifact.id,
+            artifact.architecturalRequirement,
+            artifact.measureMethod,
+            artifact.acceptanceCriteria,
+            artifact.importance,
+            artifact.difficulty,
+            project.translateQualityAttributes(artifact.qualityAttributes),
+            project.translateBusinessAtributes(artifact.businessAttributes),
+            artifact.architecturalScenarios,
+            architecturalDecisions // Placeholder for architectural decisions
+        ))
+    }
+    return processedArchitecturalRequirements
+}
 function ArchitecturalDecisionProcessor(){
     
 }

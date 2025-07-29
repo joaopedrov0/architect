@@ -82,6 +82,17 @@ class PageBuilder {
             return PageBuilder.Basics.BasicElement('ul', ['list-group', 'list-group-flush'], {}, html)
         },
 
+        ListNotFlush: (dictionary, classList=[]) => {
+            let html = ''
+            for (let key in dictionary){
+                html += `<li class="list-group-item d-flex align-items-center">
+                <h5 class="m-0">${key}:</h5>
+                <p class="mb-0 ms-1">${dictionary[key]}</p>
+                </li>`
+            }
+            return PageBuilder.Basics.BasicElement('ul', ['list-group', ...classList], {}, html)
+        },
+
         ListClear: (list) => {
             let html = ''
             for (let item of list){
@@ -389,6 +400,16 @@ class PageBuilder {
                 PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('${categoryName}', '${id}')`})
             )
         },
+        // ChildrenArtifact: (data) => {
+        //     // Versão miniatura de um artefato
+        //     let html = data.map(item => {
+        //         return PageBuilder.Basics.BasicElement('li', ['list-group-item', 'p-0'], {}, item)
+        //     })
+        //     return PageBuilder.Basics.BasicElement('ul', ['list-group'], {},
+
+        //     )
+
+        // },
         FunctionalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
             // let temp = ''
             // let categoryName = 'functional-requirement'
@@ -409,7 +430,37 @@ class PageBuilder {
                 'Dificuldade': difficulty
             })
         },
-        ArchitecturalRequirement: () => {},
+        ArchitecturalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributes, businessAttributes, architecturalScenarios, architecturalDecisions) => {
+            return this.Card.Collapse(id, `${id} - ${requirement}`,
+                PageBuilder.Basics.List({
+                    'Método de Medição': measureMethod,
+                    'Critério de Aceitação': acceptanceCriteria,
+                    'Importância': importance,
+                    'Dificuldade': difficulty
+                }) +
+                PageBuilder.Component.ChildrenList('Atributos de Qualidade', qualityAttributes) +
+                PageBuilder.Component.ChildrenList('Atributos de Negócio', businessAttributes) +
+                PageBuilder.Card.Collapse(`${id}-scenarios`, 'Cenários Arquiteturais Relacionados',
+                    PageBuilder.Basics.ListClear(architecturalScenarios.map(scenario => {
+                        return PageBuilder.Card.Basic(PageBuilder.Basics.BasicElement('h4', [], {}, scenario.description) + PageBuilder.Basics.BasicElement('span', [], {}, scenario.id),
+                            PageBuilder.Basics.List({
+                                'Importância': scenario.importance,
+                            }))
+                    }))
+                )
+                //! Separar decisões que afetam positivamente e negativamente
+                // +PageBuilder.Card.Collapse(`${id}-decisions`, 'Decisões Arquiteturais Relacionadas',
+                //     PageBuilder.Basics.ListClear(architecturalDecisions.map(decision => {
+                //         return PageBuilder.Card.Basic(PageBuilder.Basics.BasicElement('h4', [], {}, decision.description) + PageBuilder.Basics.BasicElement('span', [], {}, decision.id),
+                //             PageBuilder.Basics.List({
+                //                 'Importância': decision.importance,
+                //             }))
+                //     }))
+                // )
+                ,
+                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('architectural-requirement', '${id}')`})
+            )
+        },
         Stakeholder: (id, name, interest) => {
             return this.Component.ArtifactBase('stakeholder', id, name, {
                 'Interesse': interest
