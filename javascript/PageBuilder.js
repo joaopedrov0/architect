@@ -169,10 +169,10 @@ class PageBuilder {
          * @param {string} [footer] - Opcional, conteúdo do rodapé do card.
          * @returns {string} O HTML do card.
          */
-        Basic: (title, children, footer = '') => {
+        Basic: (title, children, footer = '', cardClassListString = '') => {
             const footerHtml = footer ? `<div class="card-footer">${footer}</div>` : '';
             return `
-            <div class="card mb-4">
+            <div class="card mb-4 ${cardClassListString}">
                 <div class="card-header">
                     <h5 class="card-title mb-0">${title}</h5>
                 </div>
@@ -431,6 +431,7 @@ class PageBuilder {
             })
         },
         ArchitecturalRequirement: (id, requirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributes, businessAttributes, architecturalScenarios, architecturalDecisions) => {
+            console.dir(architecturalDecisions)
             return this.Card.Collapse(id, `${id} - ${requirement}`,
                 PageBuilder.Basics.List({
                     'Método de Medição': measureMethod,
@@ -441,12 +442,46 @@ class PageBuilder {
                 PageBuilder.Component.ChildrenList('Atributos de Qualidade', qualityAttributes) +
                 PageBuilder.Component.ChildrenList('Atributos de Negócio', businessAttributes) +
                 PageBuilder.Card.Collapse(`${id}-scenarios`, 'Cenários Arquiteturais Relacionados',
-                    PageBuilder.Basics.ListClear(architecturalScenarios.map(scenario => {
+                    PageBuilder.Basics.BasicElement('div', [], {}, architecturalScenarios.map(scenario => {
                         return PageBuilder.Card.Basic(PageBuilder.Basics.BasicElement('h4', [], {}, scenario.description) + PageBuilder.Basics.BasicElement('span', [], {}, scenario.id),
                             PageBuilder.Basics.List({
                                 'Importância': scenario.importance,
                             }))
                     }))
+                )+
+                PageBuilder.Layout.Row(
+                    PageBuilder.Layout.Col(['col-md-6' ,'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Decisões Benéficas',
+                            architecturalDecisions.favored.map(decision => {
+                                return PageBuilder.Card.Basic(
+                                    PageBuilder.Basics.BasicElement('h4', [], {}, decision.decision) + PageBuilder.Basics.BasicElement('span', [], {}, decision.id),
+                                    PageBuilder.Basics.List({
+                                        'Alternativa': decision.alternative,
+                                    }),
+                                    ''
+                                )
+                            }),
+                            '',
+                            'success'
+                        )
+                    ) +
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Decisões Prejudiciais',
+                            architecturalDecisions.harmed.map(decision => {
+                                return PageBuilder.Card.Basic(
+                                    PageBuilder.Basics.BasicElement('h4', [], {}, decision.decision) + PageBuilder.Basics.BasicElement('span', [], {}, decision.id),
+                                    PageBuilder.Basics.List({
+                                        'Alternativa': decision.alternative,
+                                    }),
+                                    ''
+                                )
+                            }),
+                            '',
+                            'danger'
+                        )
+                    )
                 )
                 //! Separar decisões que afetam positivamente e negativamente
                 // +PageBuilder.Card.Collapse(`${id}-decisions`, 'Decisões Arquiteturais Relacionadas',
@@ -474,7 +509,90 @@ class PageBuilder {
                 this.Component.ChildrenList('Atributos de Negócio', businessAttributesNames)
             ])
         },
-        ArchitecturalDecision: () => {},
+        ArchitecturalDecision: (id, decision, archReqs, qualityAttrs, businessAttrs, alternative) => {
+            return this.Card.Collapse(id, `${id} - ${decision}`,
+                PageBuilder.Basics.List({
+                    'Alternativa': alternative,
+                }) + 
+                //! Requisitos Arquiteturais
+                PageBuilder.Layout.Row(
+                    PageBuilder.Layout.Col(['col-md-6' ,'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Requisitos Arquiteturais Favorecidos',
+                            archReqs.favored.map(req => {
+                                return PageBuilder.Card.Basic(
+                                    PageBuilder.Basics.BasicElement('h4', [], {}, req.description) + PageBuilder.Basics.BasicElement('span', [], {}, req.id),
+                                    PageBuilder.Basics.List({
+                                        'Importância': req.importance,
+                                        'Dificuldade': req.difficulty
+                                    }),
+                                    ''
+                                )
+                            }),
+                            '',
+                            'success'
+                        )
+                    ) +
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Requisitos Arquiteturais Prejudicados',
+                            archReqs.harmed.map(req => {
+                                return PageBuilder.Card.Basic(
+                                    PageBuilder.Basics.BasicElement('h4', [], {}, req.description) + PageBuilder.Basics.BasicElement('span', [], {}, req.id),
+                                    PageBuilder.Basics.List({
+                                        'Importância': req.importance,
+                                        'Dificuldade': req.difficulty
+                                    }),
+                                    ''
+                                )
+                            }),
+                            '',
+                            'danger'
+                        )  
+                    )
+                ) + 
+                //! Atributos de Qualidade
+                PageBuilder.Layout.Row(
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Atributos de Qualidade Favorecidos',
+                            PageBuilder.Basics.ListClear(qualityAttrs.favored),
+                            '',
+                            'success'
+                        )
+                    ) +
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Atributos de Qualidade Prejudicados',
+                            PageBuilder.Basics.ListClear(qualityAttrs.harmed),
+                            '',
+                            'danger'
+                        )
+                    )
+                ) +
+                //! Atributos de Negócio
+                PageBuilder.Layout.Row(
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Atributos de Negócio Favorecidos',
+                            PageBuilder.Basics.ListClear(businessAttrs.favored),
+                            '',
+                            'success'
+                        )
+                    ) +
+                    PageBuilder.Layout.Col(['col-md-6', 'col-12'],
+                        PageBuilder.Card.Basic(
+                            'Atributos de Negócio Prejudicados',
+                            PageBuilder.Basics.ListClear(businessAttrs.harmed),
+                            '',
+                            'danger'
+                        )
+                    )
+                )
+            ,
+                PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('architectural-decision', '${id}')`})
+        )
+        },
         PointOfView: () => {},
         ArchitecturalView: () => {},
 

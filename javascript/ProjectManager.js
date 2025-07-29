@@ -91,7 +91,35 @@ const submittionHandlers = {
             project.ArchitecturalScenarioManager.add(description, importance, qualityAttributesIds, businessAttributesIds)
         }
     },
-    'architectural-decision': function SubmitArchitecturalDecision(){},
+    'architectural-decision': function SubmitArchitecturalDecision(){
+        let form = document.querySelector('#edit-architectural-decision-form')
+        let id = form.querySelector('#architectural-decision-id').value
+        let decision = form.querySelector('#architectural-decision-decision').value
+        let favoredArchReq = form.querySelectorAll('input[name="architectural_decision_favored_arch_req"]:checked')
+        let harmedArchReq = form.querySelectorAll('input[name="architectural_decision_harmed_arch_req"]:checked')
+        let favoredQualityAttr = form.querySelectorAll('input[name="architectural_decision_favored_quality_attr"]:checked')
+        let harmedQualityAttr = form.querySelectorAll('input[name="architectural_decision_harmed_quality_attr"]:checked')
+        let favoredBusinessAttr = form.querySelectorAll('input[name="architectural_decision_favored_business_attr"]:checked')
+        let harmedBusinessAttr = form.querySelectorAll('input[name="architectural_decision_harmed_business_attr"]:checked')
+        let alternative = form.querySelector('#architectural-decision-alternative').value
+
+        console.dir(favoredArchReq)
+
+        let favoredArchReqIds = Array.from(favoredArchReq).map(el => el.value)
+        let harmedArchReqIds = Array.from(harmedArchReq).map(el => el.value)
+        let favoredQualityAttrIds = Array.from(favoredQualityAttr).map(el => el.value)
+        let harmedQualityAttrIds = Array.from(harmedQualityAttr).map(el => el.value)
+        let favoredBusinessAttrIds = Array.from(favoredBusinessAttr).map(el => el.value)
+        let harmedBusinessAttrIds = Array.from(harmedBusinessAttr).map(el => el.value)
+
+        console.dir(favoredArchReqIds)
+
+        if (id) {
+            project.ArchitecturalDecisionManager.update(id, decision, favoredArchReqIds, harmedArchReqIds, favoredQualityAttrIds, harmedQualityAttrIds, favoredBusinessAttrIds, harmedBusinessAttrIds, alternative)
+        } else {
+            project.ArchitecturalDecisionManager.add(decision, favoredArchReqIds, harmedArchReqIds, favoredQualityAttrIds, harmedQualityAttrIds, favoredBusinessAttrIds, harmedBusinessAttrIds, alternative)
+        }
+    },
     'point-of-view': function SubmitPointOfView(){},
     'architectural-view': function SubmitArchitecturalView(){},
 
@@ -317,7 +345,51 @@ function EditArchitecturalScenarioModal(id){
     )
     return {name: "Cenário Arquitetural", content}
 }
-function EditArchitecturalDecisionModal(id){}
+function EditArchitecturalDecisionModal(id){
+    currentArtifactType = 'architectural-decision'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.ArchitecturalDecisionManager.get(id) || {
+        decision: '',
+        favoredArchitecturalRequirements: [],
+        harmedArchitecturalRequirements: [],
+        favoredQualityAttributes: [],
+        harmedQualityAttributes: [],
+        favoredBusinessAttributes: [],
+        harmedBusinessAttributes: [],
+        alternative: ''
+    }
+
+    let architecturalRequirements = []
+    for (let ar in project.ArchitecturalRequirementManager.collection){
+        const { id, architecturalRequirement } = project.ArchitecturalRequirementManager.collection[ar]
+        architecturalRequirements.push({id, value: id, text: architecturalRequirement})
+    }
+
+    let qualityAttributes = []
+    for(let qAtt in project.QualityAttributes){
+        qualityAttributes.push({id: qAtt, value: qAtt, text: project.QualityAttributes[qAtt]})
+    }
+
+    let businessAttributes = []
+    for(let bAtt in project.BusinessAttributes){
+        businessAttributes.push({id: bAtt, value: bAtt, text: project.BusinessAttributes[bAtt]})
+    }
+
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-architectural-decision-form',
+        PageBuilder.Form.TextInput('architectural-decision-id', 'ID da Decisão Arquitetural', 'architectural_decision_id', 'Criando uma nova...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('architectural-decision-decision', 'Decisão', 'architectural_decision_decision', 'Descrição da decisão', currentArtifact.decision, {"required": true}) +
+        PageBuilder.Form.CheckBox('architectural-decision-favored-arch-req', 'Requisitos Arquiteturais Favorecidos', 'architectural_decision_favored_arch_req', architecturalRequirements, currentArtifact.favoredArchitecturalRequirements) +
+        PageBuilder.Form.CheckBox('architectural-decision-harmed-arch-req', 'Requisitos Arquiteturais Prejudicados', 'architectural_decision_harmed_arch_req', architecturalRequirements, currentArtifact.harmedArchitecturalRequirements) +
+        PageBuilder.Form.CheckBox('architectural-decision-favored-quality-attr', 'Atributos de Qualidade Favorecidos', 'architectural_decision_favored_quality_attr', qualityAttributes, currentArtifact.favoredQualityAttributes) +
+        PageBuilder.Form.CheckBox('architectural-decision-harmed-quality-attr', 'Atributos de Qualidade Prejudicados', 'architectural_decision_harmed_quality_attr', qualityAttributes, currentArtifact.harmedQualityAttributes) +
+        PageBuilder.Form.CheckBox('architectural-decision-favored-business-attr', 'Atributos de Negócio Favorecidos', 'architectural_decision_favored_business_attr', businessAttributes, currentArtifact.favoredBusinessAttributes) +
+        PageBuilder.Form.CheckBox('architectural-decision-harmed-business-attr', 'Atributos de Negócio Prejudicados', 'architectural_decision_harmed_business_attr', businessAttributes, currentArtifact.harmedBusinessAttributes) +
+        PageBuilder.Form.TextInput('architectural-decision-alternative', 'Alternativa', 'architectural_decision_alternative', 'Descrição da alternativa', currentArtifact.alternative, {"required": true})
+    )
+    return {name: "Decisão Arquitetural", content}
+}
 function EditPointOfViewModal(id){}
 function EditArchitecturalViewModal(id){}
 function EditIntensityDegreeModal(id){}
@@ -332,31 +404,38 @@ function RenderArtifacts(){
 
     //! Requisitos funcionais
     artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('functional-requirements', 'Requisitos Funcionais', [
-        PageBuilder.Component.FunctionalRequirement('RF1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name),
+        // PageBuilder.Component.FunctionalRequirement('RF1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name),
         ...processedFunctionalRequirements
     ], 'functional-requirement')
 
     //! Stakeholders
     artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('stakeholders', 'Stakeholders', [
-        PageBuilder.Component.Stakeholder('S1', 'Cliente', 'Interesse do cliente'),
-        PageBuilder.Component.Stakeholder('S2', 'Desenvolvedor', 'Interesse do desenvolvedor'),
-        PageBuilder.Component.Stakeholder('S3', 'Gerente de Projeto', 'Interesse do gerente de projeto'),
+        // PageBuilder.Component.Stakeholder('S1', 'Cliente', 'Interesse do cliente'),
+        // PageBuilder.Component.Stakeholder('S2', 'Desenvolvedor', 'Interesse do desenvolvedor'),
+        // PageBuilder.Component.Stakeholder('S3', 'Gerente de Projeto', 'Interesse do gerente de projeto'),
         ...processedStakeholders
     ], 'stakeholder')
 
     //! Cenários Arquiteturais
     let processedArchitecturalScenarios = processArchitecturalScenarios()
     artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-scenarios', 'Cenários Arquiteturais', [
-        PageBuilder.Component.ArchitecturalScenario('AS1', 'Cenário 1', project.IntensityDegrees[3].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade']),
+        // PageBuilder.Component.ArchitecturalScenario('AS1', 'Cenário 1', project.IntensityDegrees[3].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade']),
         ...processedArchitecturalScenarios
     ], 'architectural-scenario')
 
     //! Requisitos Arquiteturais
-    let processedArchitecturalRequirements = ArchitecturalRequirementProcessor()
+    let processedArchitecturalRequirements = processArchitecturalRequirements()
     artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-requirements', 'Requisitos Arquiteturais', [
-        PageBuilder.Component.ArchitecturalRequirement('AR1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade'], ['AS1']),
+        // PageBuilder.Component.ArchitecturalRequirement('AR1', 'o sistema deve funcionar', 'medindo', 'tem que ta aceitavel', project.IntensityDegrees[3].name, project.IntensityDegrees[2].name, ['Performance', 'Segurança'], ['Custo', 'Manutenibilidade'], ['AS1'], {favored: [], harmed: []}),
         ...processedArchitecturalRequirements
     ], 'architectural-requirement')
+
+    //! Decisões Arquiteturais
+    let processedArchitecturalDecisions = processArchitecturalDecisions()
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-decisions', 'Decisões Arquiteturais', [
+        // PageBuilder.Component.ArchitecturalDecision('AD1', 'Decisão 1', {favored: ['AR1'], harmed: ['AR2']}, {favored: ['Performance', 'Segurança'], harmed: ['Custo', 'Manutenibilidade']}, {favored: ['Custo'], harmed: ['Manutenibilidade']}, 'Alternativa 1'),
+        ...processedArchitecturalDecisions
+        ], 'architectural-decision')
 
 }
 
@@ -404,8 +483,8 @@ function processFunctionalRequirements(){
             artifact.functionalRequirement,
             artifact.measureMethod,
             artifact.acceptanceCriteria,
-            artifact.importance,
-            artifact.difficulty
+            artifact.importance ? project.IntensityDegrees[artifact.importance].name : 'Não informado',
+            artifact.difficulty ? project.IntensityDegrees[artifact.difficulty].name : 'Não informado'
         ))
     }
     return processedFunctionalRequirements
@@ -429,43 +508,110 @@ function processArchitecturalScenarios(){
         processedArchitecturalScenarios.push(PageBuilder.Component.ArchitecturalScenario(
             artifact.id,
             artifact.description,
-            artifact.importance,
+            artifact.importance ? project.IntensityDegrees[artifact.importance].name : 'Não informado',
             project.translateQualityAttributes(artifact.qualityAttributes),
             project.translateBusinessAtributes(artifact.businessAttributes)
         ))
     }
     return processedArchitecturalScenarios
 }
-function ArchitecturalRequirementProcessor(){
+function processArchitecturalRequirements(){
     let architecturalRequirements = project.ArchitecturalRequirementManager.getAll()
     let processedArchitecturalRequirements = []
 
-    //! Atualizar depois
-    let architecturalDecisions = []
+    
 
     for (artifact of architecturalRequirements){
+        let architecturalScenarios = project.ArchitecturalRequirementManager.getArchitecturalScenariosAssociated(artifact.id)
+        architecturalScenarios = architecturalScenarios.map(scenario => {
+            return {
+                id: scenario.id,
+                description: scenario.description,
+                importance: scenario.importance ? project.IntensityDegrees[scenario.importance].name : 'Não informado'
+            }
+        })
+
+        let architecturalDecisions = project.ArchitecturalRequirementManager.getArchitecturalDecisionsAssociated(artifact.id)
+        
+        console.log("Favored")
+        console.dir(architecturalDecisions.favored)
+
         processedArchitecturalRequirements.push(PageBuilder.Component.ArchitecturalRequirement(
             artifact.id,
             artifact.architecturalRequirement,
             artifact.measureMethod,
             artifact.acceptanceCriteria,
-            artifact.importance,
-            artifact.difficulty,
+            artifact.importance ? project.IntensityDegrees[artifact.importance].name : 'Não informado',
+            artifact.difficulty ? project.IntensityDegrees[artifact.difficulty].name : 'Não informado',
             project.translateQualityAttributes(artifact.qualityAttributes),
             project.translateBusinessAtributes(artifact.businessAttributes),
-            artifact.architecturalScenarios,
+            architecturalScenarios,
             architecturalDecisions // Placeholder for architectural decisions
         ))
     }
     return processedArchitecturalRequirements
 }
-function ArchitecturalDecisionProcessor(){
+function processArchitecturalDecisions(){
+    let architecturalDecision = project.ArchitecturalDecisionManager.getAll()
+    let processedArchitecturalDecisions = []
+
+    
+
+    for (artifact of architecturalDecision){
+        let archReqsRaw = project.ArchitecturalDecisionManager.getArchitecturalRequirementsAssociated(artifact.id)
+        let qualityAttrs = project.ArchitecturalDecisionManager.getQualityAttributesAssociated(artifact.id)
+        let businessAttrs = project.ArchitecturalDecisionManager.getBusinessAttributesAssociated(artifact.id)
+
+        // console.dir(archReqsRaw.favored)
+
+
+        let archReqs = {
+            favored: archReqsRaw.favored.map(req => {
+                return {
+                    id: req.id,
+                    description: req.architecturalRequirement,
+                    importance: req.importance ? project.IntensityDegrees[req.importance].name : 'Não informado',
+                    difficulty: req.difficulty ? project.IntensityDegrees[req.difficulty].name : 'Não informado'
+                }
+            }),
+            harmed: archReqsRaw.harmed.map(req => {
+                return {
+                    id: req.id,
+                    description: req.architecturalRequirement,
+                    importance: req.importance ? project.IntensityDegrees[req.importance].name : 'Não informado',
+                    difficulty: req.difficulty ? project.IntensityDegrees[req.difficulty].name : 'Não informado'
+                }
+            }),
+
+        }
+
+        console.dir(archReqs)
+
+        // let qualityAttrs = {
+        //     favored: project.translateQualityAttributes(qualityAttrsRaw.favored),
+        //     harmed: project.translateQualityAttributes(qualityAttrsRaw.harmed)
+        // }
+    
+        // let businessAttrs = {
+        //     favored: project.translateBusinessAtributes(businessAttrsRaw.favored),
+        //     harmed: project.translateBusinessAtributes(businessAttrsRaw.harmed)
+        // }
+
+        processedArchitecturalDecisions.push(PageBuilder.Component.ArchitecturalDecision(
+            artifact.id,
+            artifact.decision,
+            archReqs,
+            qualityAttrs,
+            businessAttrs,
+            artifact.alternative
+        ))
+    }
+    return processedArchitecturalDecisions
+}
+function processPointOfViews(){
     
 }
-function PointOfViewProcessor(){
-    
-}
-function ArchitecturalViewProcessor(){
+function processArchitecturalViews(){
 }
 
 

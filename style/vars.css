@@ -17,6 +17,10 @@
     --title-font: "Amarante", serif;
     --text-font: "Faculty Glyphic", sans-serif;
 
+    --success-bg: #4caf50;
+    --danger-bg: #f44336;
+
+
     --icon-size: 1.5rem;
 }
 

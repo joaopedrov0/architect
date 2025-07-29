@@ -149,10 +149,10 @@ class Project {
             return this.ArchitecturalScenarioManager.getListById(req.architecturalScenarios);
         },
         getArchitecturalDecisionsAssociated: (id) => {
-             return this.ArchitecturalDecisionManager.getAll().filter(decision =>
-                (decision.favoredArchitecturalRequirements?.includes(id)) ||
-                (decision.harmedArchitecturalRequirements?.includes(id))
-            );
+             return {
+                favored: this.ArchitecturalDecisionManager.getAll().filter(decision => decision.favoredArchitecturalRequirements?.includes(id)) || [],
+                harmed: this.ArchitecturalDecisionManager.getAll().filter(decision => decision.harmedArchitecturalRequirements?.includes(id)) || []
+             }
         },
     };
 
@@ -249,9 +249,9 @@ class Project {
             delete this.ArchitecturalDecisionManager.collection[id];
             this._updateTimestamp();
         },
-        update: (id, data) => {
+        update: (id, decision, favoredArchitecturalRequirements, harmedArchitecturalRequirements, favoredQualityAttributes, harmedQualityAttributes, favoredBusinessAttributes, harmedBusinessAttributes, alternative) => {
             if (this.ArchitecturalDecisionManager.collection[id]) {
-                this.ArchitecturalDecisionManager.collection[id] = { ...this.ArchitecturalDecisionManager.collection[id], ...data };
+                this.ArchitecturalDecisionManager.collection[id] = { ...this.ArchitecturalDecisionManager.collection[id], decision, favoredArchitecturalRequirements, harmedArchitecturalRequirements, favoredQualityAttributes, harmedQualityAttributes, favoredBusinessAttributes, harmedBusinessAttributes, alternative };
                 this._updateTimestamp();
                 return this.ArchitecturalDecisionManager.collection[id];
             }
@@ -301,6 +301,13 @@ class Project {
         delete: (id) => {
             delete this.PointOfViewManager.collection[id];
             this._updateTimestamp();
+        },
+        update: (id, pointOfView, relatedQualityAttributesIds) => {
+            if (this.PointOfViewManager.collection[id]) {
+                this.PointOfViewManager.collection[id] = { ...this.PointOfViewManager.collection[id], pointOfView, relatedQualityAttributes: relatedQualityAttributesIds };
+                this._updateTimestamp();
+                return this.PointOfViewManager.collection[id];
+            }
         },
         get: (id) => this.PointOfViewManager.collection[id],
         getAll: () => Object.values(this.PointOfViewManager.collection),
