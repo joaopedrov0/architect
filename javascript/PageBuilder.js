@@ -388,6 +388,15 @@ class PageBuilder {
     }
 
     static Component = {
+        DeleteModal: (id) => {
+            let footer = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Na verdade, deixa pra lá...</button>
+                <button type="button" class="btn btn-danger" onclick="deleteProject('${id}')">Sim, apagar projeto</button>`
+            return PageBuilder.Basics.ModalElement('delete-modal', "Apagar projeto", 
+                `<p>Você tem certeza que deseja apagar este projeto? Esta ação não pode ser desfeita.</p>`,
+                footer
+            )
+        },
+
         ChildrenList: (title, content) => {
             return PageBuilder.Card.Basic(title, 
                 PageBuilder.Basics.ListClear(content),

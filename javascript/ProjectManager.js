@@ -439,11 +439,12 @@ function RenderArtifacts(){
 
 }
 
-function initializeEditModal(){
+function initializeModals(){
     modalArea.innerHTML = PageBuilder.Basics.ModalElement('edit-modal', 'Editar Artefato', '', `
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
         <button type="button" class="btn btn-primary" onclick="SubmitEditArtifact()">Salvar</button>
-        `)
+        `)+
+        PageBuilder.Component.DeleteModal(project.id)
 }
 
 function RenderSettings(){
@@ -471,6 +472,11 @@ function RenderSettings(){
     }
 
     
+}
+
+function deleteProject(){
+    StorageManager.deleteProject(project.id)
+    window.location.href = 'index.html'
 }
 
 //! Artifacts Processors
@@ -616,7 +622,7 @@ function processArchitecturalViews(){
 
 
 
-initializeEditModal()
+initializeModals()
 RenderArtifacts()
 RenderEditModal()
 RenderSettings()

@@ -8,15 +8,68 @@ class Project {
 
         // Project Settings Manager (key:value structure)
         this.BusinessAttributes = {
-            '1': 'business attribute 1',
-            '2': 'business attribute 2',
-            '3': 'business attribute 3'
-        }; // id: { id, name }
+  "1": "Aumento da Receita",
+  "2": "Redução de Custos Operacionais",
+  "3": "Aumento da Satisfação do Cliente",
+  "4": "Expansão para Novos Mercados",
+  "5": "Melhora na Eficiência dos Processos",
+  "6": "Conformidade com Regulamentações (Compliance)",
+  "7": "Aumento da Retenção de Clientes",
+  "8": "Fortalecimento da Marca",
+  "9": "Inovação em Produtos ou Serviços",
+  "10": "Otimização da Tomada de Decisão"
+}; // id: { id, name }
         this.QualityAttributes = {
-            '1': 'quality attribute 1',
-            '2': 'quality attribute 2',
-            '3': 'quality attribute 3'
-        };  // id: { id, name }
+  "1": "Adequação Funcional (ISO 25010 - Qualidade de Produto)",
+  "2": "Completude Funcional (Sub-característica de Adequação Funcional)",
+  "3": "Correção Funcional (Sub-característica de Adequação Funcional)",
+  "4": "Apropriação Funcional (Sub-característica de Adequação Funcional)",
+  "5": "Eficiência de Desempenho (ISO 25010 - Qualidade de Produto)",
+  "6": "Comportamento em Relação ao Tempo (Sub-característica de Eficiência de Desempenho)",
+  "7": "Utilização de Recursos (Sub-característica de Eficiência de Desempenho)",
+  "8": "Capacidade (Sub-característica de Eficiência de Desempenho)",
+  "9": "Compatibilidade (ISO 25010 - Qualidade de Produto)",
+  "10": "Coexistência (Sub-característica de Compatibilidade)",
+  "11": "Interoperabilidade (Sub-característica de Compatibilidade)",
+  "12": "Usabilidade (ISO 25010 - Qualidade de Produto)",
+  "13": "Reconhecimento de Adequação (Sub-característica de Usabilidade)",
+  "14": "Aprendizagem (Sub-característica de Usabilidade)",
+  "15": "Operabilidade (Sub-característica de Usabilidade)",
+  "16": "Proteção Contra Erros do Usuário (Sub-característica de Usabilidade)",
+  "17": "Estética da Interface (Sub-característica de Usabilidade)",
+  "18": "Acessibilidade (Sub-característica de Usabilidade)",
+  "19": "Confiabilidade (ISO 25010 - Qualidade de Produto)",
+  "20": "Maturidade (Sub-característica de Confiabilidade)",
+  "21": "Disponibilidade (Sub-característica de Confiabilidade)",
+  "22": "Tolerância a Falhas (Sub-característica de Confiabilidade)",
+  "23": "Recuperabilidade (Sub-característica de Confiabilidade)",
+  "24": "Segurança (ISO 25010 - Qualidade de Produto)",
+  "25": "Confidencialidade (Sub-característica de Segurança)",
+  "26": "Integridade (Sub-característica de Segurança)",
+  "27": "Não Repúdio (Sub-característica de Segurança)",
+  "28": "Responsabilidade (Accountability) (Sub-característica de Segurança)",
+  "29": "Autenticidade (Sub-característica de Segurança)",
+  "30": "Manutenibilidade (ISO 25010 - Qualidade de Produto)",
+  "31": "Modularidade (Sub-característica de Manutenibilidade)",
+  "32": "Reusabilidade (Sub-característica de Manutenibilidade)",
+  "33": "Analisabilidade (Sub-característica de Manutenibilidade)",
+  "34": "Modificabilidade (Sub-característica de Manutenibilidade)",
+  "35": "Testabilidade (Sub-característica de Manutenibilidade)",
+  "36": "Portabilidade (ISO 25010 - Qualidade de Produto)",
+  "37": "Adaptabilidade (Sub-característica de Portabilidade)",
+  "38": "Instalabilidade (Sub-característica de Portabilidade)",
+  "39": "Substituibilidade (Sub-característica de Portabilidade)",
+  "40": "Efetividade (ISO 25010 - Qualidade em Uso)",
+  "41": "Eficiência (ISO 25010 - Qualidade em Uso)",
+  "42": "Satisfação (ISO 25010 - Qualidade em Uso)",
+  "43": "Ausência de Risco (ISO 25010 - Qualidade em Uso)",
+  "44": "Mitigação de Risco Econômico (Sub-característica de Ausência de Risco)",
+  "45": "Mitigação de Risco à Saúde e Segurança (Sub-característica de Ausência de Risco)",
+  "46": "Mitigação de Risco Ambiental (Sub-característica de Ausência de Risco)",
+  "47": "Cobertura de Contexto (ISO 25010 - Qualidade em Uso)",
+  "48": "Completude de Contexto (Sub-característica de Cobertura de Contexto)",
+  "49": "Flexibilidade (Sub-característica de Cobertura de Contexto)"
+};  // id: { id, name }
         // 1. Graus de intensidade incluídos como configuração, com valores pré-definidos.
         this.IntensityDegrees = {
             '1': { id: '1', name: 'Baixo' },

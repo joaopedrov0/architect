@@ -14,6 +14,13 @@ class StorageManager {
         localStorage.setItem('projects', JSON.stringify(projects));
     }
 
+    static deleteProject(id){
+        const projects = StorageManager.getProjects();
+        const updatedProjects = projects.filter(project => project.id !== id);
+        localStorage.setItem('projects', JSON.stringify(updatedProjects));
+        this.clearCurrentProject();
+    }
+
     static saveProject(project){
         const projects = StorageManager.getProjects();
         for(let index in projects){
@@ -29,6 +36,10 @@ class StorageManager {
 
     static setCurrentProject(id){
         localStorage.setItem('currentProject', id);
+    }
+
+    static clearCurrentProject(){
+        localStorage.removeItem('currentProject');
     }
 
     static getCurrentProjectId(){
