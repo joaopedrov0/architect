@@ -120,8 +120,35 @@ const submittionHandlers = {
             project.ArchitecturalDecisionManager.add(decision, favoredArchReqIds, harmedArchReqIds, favoredQualityAttrIds, harmedQualityAttrIds, favoredBusinessAttrIds, harmedBusinessAttrIds, alternative)
         }
     },
-    'point-of-view': function SubmitPointOfView(){},
-    'architectural-view': function SubmitArchitecturalView(){},
+    'point-of-view': function SubmitPointOfView(){
+        let form = document.querySelector('#edit-point-of-view-form')
+        let id = form.querySelector('#point-of-view-id').value
+        let pointOfView = form.querySelector('#point-of-view-description').value
+        let qualityAttributes = form.querySelectorAll('input[name="point_of_view_quality_attributes"]:checked')
+
+        let qualityAttributesIds = Array.from(qualityAttributes).map(el => el.value)
+
+        if (id) {
+            project.PointOfViewManager.update(id, pointOfView, qualityAttributesIds)
+        } else {
+            project.PointOfViewManager.add(pointOfView, qualityAttributesIds)
+        }
+    },
+    'architectural-view': function SubmitArchitecturalView(){
+        let form = document.querySelector('#edit-architectural-view-form')
+        let id = form.querySelector('#architectural-view-id').value
+        let architecturalView = form.querySelector('#architectural-view-name').value
+        let link = form.querySelector('#architectural-view-link').value
+        let relatedPointsOfView = form.querySelectorAll('input[name="architectural_view_points_of_view"]:checked')
+
+        let relatedPointsOfViewIds = Array.from(relatedPointsOfView).map(el => el.value)
+
+        if (id) {
+            project.ArchitecturalViewManager.update(id, architecturalView, link, relatedPointsOfViewIds)
+        } else {
+            project.ArchitecturalViewManager.add(architecturalView, link, relatedPointsOfViewIds)
+        }
+    },
 
     'intensity-degree': function SubmitIntensityDegree(){},
     'quality-attribute': function SubmitQualityAttribute(){},
@@ -403,8 +430,54 @@ function EditArchitecturalDecisionModal(id){
     )
     return {name: "Decisão Arquitetural", content}
 }
-function EditPointOfViewModal(id){}
-function EditArchitecturalViewModal(id){}
+function EditPointOfViewModal(id){
+    currentArtifactType = 'point-of-view'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.PointOfViewManager.get(id) || {
+        pointOfView: '',
+        relatedQualityAttributes: []
+    }
+
+    let qualityAttributes = []
+    for (let qAtt in project.QualityAttributes){
+        qualityAttributes.push({id: qAtt, value: qAtt, text: project.QualityAttributes[qAtt]})
+    }
+
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-point-of-view-form',
+        PageBuilder.Form.TextInput('point-of-view-id', 'ID do Ponto de Vista', 'point_of_view_id', 'Criando um novo...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('point-of-view-description', 'Descrição do Ponto de Vista', 'point_of_view_description', 'Descrição do ponto de vista', currentArtifact.pointOfView, {"required": true}) +
+        PageBuilder.Form.CheckBox('point-of-view-quality-attributes', 'Atributos de Qualidade', 'point_of_view_quality_attributes', qualityAttributes, currentArtifact.relatedQualityAttributes)
+    )
+
+    return {name: "Ponto de Vista", content}
+}
+function EditArchitecturalViewModal(id){
+    currentArtifactType = 'architectural-view'
+
+    // Loading current values
+    id = id || ''
+    let currentArtifact = project.ArchitecturalViewManager.get(id) || {
+        architecturalView: '',
+        link: '',
+        relatedPointsOfView: []
+    }
+
+    let pointsOfView = []
+    for (let pov in project.PointOfViewManager.collection){
+        const { id, pointOfView } = project.PointOfViewManager.collection[pov]
+        pointsOfView.push({id, value: id, text: pointOfView})
+    }
+
+    let content = PageBuilder.Component.ArtifactEditFormContainer('edit-architectural-view-form',
+        PageBuilder.Form.TextInput('architectural-view-id', 'ID da Visão Arquitetural', 'architectural_view_id', 'Criando uma nova...', id, {"readonly": true}) +
+        PageBuilder.Form.TextInput('architectural-view-name', 'Nome da Visão Arquitetural', 'architectural_view_name', 'Nome da visão arquitetural', currentArtifact.architecturalView, {"required": true}) +
+        PageBuilder.Form.TextInput('architectural-view-link', 'Link da Visão Arquitetural', 'architectural_view_link', 'Link para a visão arquitetural', currentArtifact.link, {"required": true}) +
+        PageBuilder.Form.CheckBox('architectural-view-points-of-view', 'Pontos de Vista Relacionados', 'architectural_view_points_of_view', pointsOfView, currentArtifact.relatedPointsOfView)
+    )
+    return {name: "Visão Arquitetural", content}
+}
 function EditIntensityDegreeModal(id){}
 function EditQualityAttributeModal(id){}
 function EditBusinessAttributeModal(id){}
@@ -449,6 +522,20 @@ function RenderArtifacts(){
         // PageBuilder.Component.ArchitecturalDecision('AD1', 'Decisão 1', {favored: ['AR1'], harmed: ['AR2']}, {favored: ['Performance', 'Segurança'], harmed: ['Custo', 'Manutenibilidade']}, {favored: ['Custo'], harmed: ['Manutenibilidade']}, 'Alternativa 1'),
         ...processedArchitecturalDecisions
         ], 'architectural-decision')
+
+    //! Pontos de Vista
+    let processedPointsOfView = processPointOfViews()
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('points-of-view', 'Pontos de Vista', [
+        // PageBuilder.Component.PointOfView('POV1', 'Ponto de Vista 1', ['Performance', 'Segurança']),
+        ...processedPointsOfView
+    ], 'point-of-view')
+
+    //! Visões Arquiteturais
+    let processedArchitecturalViews = processArchitecturalViews()
+    artifactArea.innerHTML += PageBuilder.Component.ArtifactGroup('architectural-views', 'Visões Arquiteturais', [
+        // PageBuilder.Component.ArchitecturalView('AV1', 'Visão Arquitetural 1', 'Descrição da visão', ['POV1', 'POV2']),
+        ...processedArchitecturalViews
+    ], 'architectural-view')
 
 }
 
@@ -628,9 +715,38 @@ function processArchitecturalDecisions(){
     return processedArchitecturalDecisions
 }
 function processPointOfViews(){
-    
+    let pointOfViews = project.PointOfViewManager.getAll()
+    let processedPointOfViews = []
+    for (artifact of pointOfViews){
+        processedPointOfViews.push(PageBuilder.Component.PointOfView(
+            artifact.id,
+            artifact.pointOfView,
+            project.translateQualityAttributes(artifact.relatedQualityAttributes),
+        ))
+    }
+    return processedPointOfViews
 }
 function processArchitecturalViews(){
+    let architecturalViews = project.ArchitecturalViewManager.getAll()
+    let processedArchitecturalViews = []
+    for (artifact of architecturalViews){
+
+        let povNames = []
+        for (let pov of artifact.relatedPointsOfView){
+            povNames.push(project.PointOfViewManager.get(pov).pointOfView)
+        }
+
+        processedArchitecturalViews.push(PageBuilder.Component.ArchitecturalView(
+            artifact.id,
+            artifact.architecturalView,
+            artifact.link,
+            povNames
+        ))
+    }
+
+    console.dir(processedArchitecturalViews)
+
+    return processedArchitecturalViews
 }
 
 

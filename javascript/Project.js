@@ -397,11 +397,12 @@ class Project {
 
     ArchitecturalViewManager = {
         collection: {},
-        add: (architecturalView, relatedPointsOfViewIds) => {
+        add: (architecturalView, link, relatedPointsOfViewIds) => {
             const id = this._getID('ArchitecturalView');
             this.ArchitecturalViewManager.collection[id] = {
                 id,
                 architecturalView,
+                link,
                 relatedPointsOfView: relatedPointsOfViewIds || []
             };
             this._updateTimestamp();
@@ -410,6 +411,13 @@ class Project {
         delete: (id) => {
             delete this.ArchitecturalViewManager.collection[id];
             this._updateTimestamp();
+        },
+        update: (id, architecturalView, link, relatedPointsOfViewIds) => {
+            if (this.ArchitecturalViewManager.collection[id]) {
+                this.ArchitecturalViewManager.collection[id] = { ...this.ArchitecturalViewManager.collection[id], architecturalView, link, relatedPointsOfView: relatedPointsOfViewIds };
+                this._updateTimestamp();
+                return this.ArchitecturalViewManager.collection[id];
+            }
         },
         get: (id) => this.ArchitecturalViewManager.collection[id],
         getAll: () => Object.values(this.ArchitecturalViewManager.collection),

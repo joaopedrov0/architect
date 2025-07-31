@@ -627,8 +627,18 @@ class PageBuilder {
                 PageBuilder.Button.InlineBtn('Editar', '', 'div', {'data-bs-toggle': 'modal', 'data-bs-target': '#edit-modal', 'onclick': `toggleEditor('architectural-decision', '${id}')`})
         )
         },
-        PointOfView: () => {},
-        ArchitecturalView: () => {},
+        PointOfView: (id, pointOfView, qualityAttributesNames) => {
+            return this.Component.ArtifactBase('point-of-view', id, pointOfView, {}, [
+                this.Component.ChildrenList('Atributos de Qualidade', qualityAttributesNames)
+            ])
+        },
+        ArchitecturalView: (id, architecturalView, link, relatedPointsOfView) => {
+            return this.Component.ArtifactBase('architectural-view', id, architecturalView, {
+                'Link': PageBuilder.Basics.BasicElement('a', [], {"target": "_blank", "href": link}, link)
+            }, [
+                this.Component.ChildrenList('Pontos de Vista Relacionados', relatedPointsOfView)
+            ])
+        },
 
         ArtifactGroup: (id, title, artifactList, type) => {
 
