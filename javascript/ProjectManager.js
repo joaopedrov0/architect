@@ -153,7 +153,20 @@ function toggleEditor(type, id=''){
 }
 
 function exportJson(){
-    alert("Funcionalidade em desenvolvimento")
+    const json = JSON.stringify(project, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const date_now = new Date().toISOString().replace('T',' ').split('.')[0]; // YYYY-MM-DD HH:mm:ss
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${`${date_now} - ${project.name}` || 'project'}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    URL.revokeObjectURL(url);
 }
 function exportTable(){
     alert("Funcionalidade em desenvolvimento")

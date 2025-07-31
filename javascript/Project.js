@@ -76,6 +76,15 @@ class Project {
             '2': { id: '2', name: 'Médio' },
             '3': { id: '3', name: 'Alto' }
         };
+        this.idCounting = {
+            FunctionalRequirement: 0,
+            ArchitecturalRequirement: 0,
+            Stakeholder: 0,
+            ArchitecturalScenario: 0,
+            ArchitecturalDecision: 0,
+            PointOfView: 0,
+            ArchitecturalView: 0
+        }
     }
 
     static rebuild(projectObject) {
@@ -87,6 +96,8 @@ class Project {
         project.BusinessAttributes = projectObject.BusinessAttributes;
         project.QualityAttributes = projectObject.QualityAttributes;
         project.IntensityDegrees = projectObject.IntensityDegrees;
+
+        project.idCounting = projectObject.idCounting;
 
         project.FunctionalRequirementManager.collection = projectObject.FunctionalRequirementManager.collection || {};
         project.ArchitecturalRequirementManager.collection = projectObject.ArchitecturalRequirementManager.collection || {};
@@ -104,8 +115,25 @@ class Project {
         return `${temp.getFullYear()}/${pad(temp.getMonth() + 1)}/${pad(temp.getDate())} - ${pad(temp.getHours())}:${pad(temp.getMinutes())}:${pad(temp.getSeconds())}`;
     }
 
-    _getID() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    _getID(category) {
+        switch (category) {
+            case 'FunctionalRequirement':
+                return `RF-${++this.idCounting.FunctionalRequirement}`;
+            case 'ArchitecturalRequirement':
+                return `RQ-${++this.idCounting.ArchitecturalRequirement}`;
+            case 'Stakeholder':
+                return `ST-${++this.idCounting.Stakeholder}`;
+            case 'ArchitecturalScenario':
+                return `CA-${++this.idCounting.ArchitecturalScenario}`;
+            case 'ArchitecturalDecision':
+                return `DA-${++this.idCounting.ArchitecturalDecision}`;
+            case 'PointOfView':
+                return `POV-${++this.idCounting.PointOfView}`;
+            case 'ArchitecturalView':
+                return `VA-${++this.idCounting.ArchitecturalView}`;
+            default:
+                return `ID-${Date.now().toString(36)}-${Math.random().toString(36)}`; // Fallback for generic IDs
+        }
     }
 
     _updateTimestamp() {
@@ -124,7 +152,7 @@ class Project {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
         add: (functionalRequirement, measureMethod, acceptanceCriteria, importance, difficulty) => {
-            const id = this._getID();
+            const id = this._getID('FunctionalRequirement');
             this.FunctionalRequirementManager.collection[id] = {
                 id,
                 functionalRequirement,
@@ -156,7 +184,7 @@ class Project {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
         add: (architecturalRequirement, measureMethod, acceptanceCriteria, importance, difficulty, qualityAttributesIds, businessAttributesIds, architecturalScenariosIds) => {
-            const id = this._getID();
+            const id = this._getID('ArchitecturalRequirement');
             this.ArchitecturalRequirementManager.collection[id] = {
                 id,
                 architecturalRequirement,
@@ -213,7 +241,7 @@ class Project {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
         add: (name, interest) => {
-            const id = this._getID();
+            const id = this._getID('Stakeholder');
             this.StakeholderManager.collection[id] = { id, name, interest };
             this._updateTimestamp();
             return this.StakeholderManager.collection[id];
@@ -238,7 +266,7 @@ class Project {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
         add: (description, importance, qualityAttributes, businessAttributes) => {
-            const id = this._getID();
+            const id = this._getID('ArchitecturalScenario');
             this.ArchitecturalScenarioManager.collection[id] = {
                 id,
                 description,
@@ -283,7 +311,7 @@ class Project {
         collection: {},
         // 2. Método de adição alterado para não aceitar um objeto genérico.
         add: (decision, favoredArchReqIds, harmedArchReqIds, favoredQualityAttrIds, harmedQualityAttrIds, favoredBusinessAttrIds, harmedBusinessAttrIds, alternative) => {
-            const id = this._getID();
+            const id = this._getID('ArchitecturalDecision');
             this.ArchitecturalDecisionManager.collection[id] = {
                 id,
                 decision,
@@ -342,7 +370,7 @@ class Project {
     PointOfViewManager = {
         collection: {},
         add: (pointOfView, relatedQualityAttributesIds) => {
-            const id = this._getID();
+            const id = this._getID('PointOfView');
             this.PointOfViewManager.collection[id] = {
                 id,
                 pointOfView,
@@ -370,7 +398,7 @@ class Project {
     ArchitecturalViewManager = {
         collection: {},
         add: (architecturalView, relatedPointsOfViewIds) => {
-            const id = this._getID();
+            const id = this._getID('ArchitecturalView');
             this.ArchitecturalViewManager.collection[id] = {
                 id,
                 architecturalView,

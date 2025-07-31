@@ -104,7 +104,11 @@ function RenderCreateProjectModal(){
     )
 }
 
-function RenderImportProjectModal(){}
+function RenderImportProjectModal(){
+    const modalArea = document.querySelector('#modal-area')
+
+    modalArea.innerHTML += PageBuilder.Component.LoadProjectFileModal()
+}
 
 function RenderListOfProjects(){
     const projects = StorageManager.getProjects()
@@ -119,7 +123,7 @@ function RenderListOfProjects(){
         )
     )
 
-    const importProjectCard = PageBuilder.Basics.BasicElement('div', ['col-md-3', 'col-sm-6', 'col-12'], {},
+    const importProjectCard = PageBuilder.Basics.BasicElement('div', ['col-md-3', 'col-sm-6', 'col-12'], {'data-bs-toggle': 'modal', 'data-bs-target': '#load-project-file-modal'},
         PageBuilder.Basics.BasicElement('div', ['new-project-btn', 'project-card', 'p-4'], {},
             PageBuilder.Basics.BasicElement('span', ['project-name'], {},
                 `${PageBuilder.Basics.Icon('bi-file-earmark-arrow-down','medium-icon')}Importar Projeto`
@@ -162,6 +166,44 @@ function RenderListOfProjects(){
     //         <span class="project-name"><i class="bi bi-file-earmark-arrow-down"></i>Importar projeto</span>
     //     </div>
     // </div>
+}
+
+async function loadProjectFile(){
+    let projectFile = document.querySelector('#project-file')
+    if (projectFile.files.length === 0) {
+        alert("Por favor, selecione um arquivo de projeto para importar.")
+        return;
+    }
+    let file = projectFile.files[0]
+
+    if (file.type !== 'application/json') {
+        alert("Por favor, selecione um arquivo JSON válido.")
+        return;
+    }
+    let reader = new FileReader()
+    console.dir(reader)
+    reader.onload = function(event) {
+        try {
+            console.log(event.target.result)
+            let projectData = JSON.parse(event.target.result)
+            console.dir("Dados do projeto importado:", projectData)
+            if (projectData && projectData.name && projectData.author) {
+                let project = Project.rebuild(projectData)
+                console.dir("Projeto reconstruído:", project)
+                StorageManager.addProject(project)
+                RenderListOfProjects()
+                toggleModal('load-project-file-modal')
+                alert("Projeto importado com sucesso!")
+            } else {
+                alert("O arquivo selecionado não contém dados de projeto válidos.")
+            }
+        } catch (error) {
+            console.error("Erro ao ler o arquivo:", error)
+            alert("Erro ao ler o arquivo. Por favor, verifique o formato do JSON.")
+        }
+    }
+
+    reader.readAsText(file)
 }
 
 

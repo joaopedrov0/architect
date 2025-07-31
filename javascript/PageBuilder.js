@@ -370,6 +370,20 @@ class PageBuilder {
                 <form id="${formId}">${formChildren}</form>
             </div>`;
         },
+
+        FileInput: (id, label, formName, placeholder = '', value='', attributes) => {
+            let temp_att = '';
+            if (attributes) {
+                for (let att in attributes) {
+                    temp_att += ` ${att}="${attributes[att]}"`;
+                }
+            }
+            return `
+            <div class="mb-3">
+                <label for="${id}" class="form-label">${label}</label>
+                <input type="file" class="form-control" id="${id}" name="${formName}" placeholder="${placeholder}" value="${value}" ${temp_att}>
+            </div>`;
+        }
     }
 
     static Table = {
@@ -388,6 +402,17 @@ class PageBuilder {
     }
 
     static Component = {
+
+        LoadProjectFileModal: () => {
+            return PageBuilder.Basics.ModalElement(
+                'load-project-file-modal',
+                'Carregar Projeto',
+                PageBuilder.Form.FileInput('project-file', 'Arquivo do Projeto', 'project_file', 'Selecione o arquivo do projeto...'),
+                `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                 <button type="button" class="btn btn-primary" onclick="loadProjectFile()">Carregar</button>`
+            );
+        },
+
         DeleteModal: (id) => {
             let footer = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Na verdade, deixa pra lá...</button>
                 <button type="button" class="btn btn-danger" onclick="deleteProject('${id}')">Sim, apagar projeto</button>`
