@@ -138,7 +138,7 @@ function RenderListOfProjects(){
     let projectsHTML = ""
     for (let project of projects){
         projectsHTML += PageBuilder.Basics.BasicElement('div', ['col-md-3', 'col-sm-6', 'col-12'], {},
-            PageBuilder.Basics.BasicElement('a', ['project-card', 'p-4'], {'id':project.id, 'href': '/project.html'},
+            PageBuilder.Basics.BasicElement('a', ['project-card', 'p-4'], {'id':project.id, 'href': './project.html'},
                 PageBuilder.Basics.BasicElement('span', ['project-name'], {}, project.name)
             )
     )}
