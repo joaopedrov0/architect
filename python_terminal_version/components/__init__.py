@@ -1,2 +1,0 @@
-from .FunctionalRequirementManager.FuncionalRequirementManager import FunctionalRequirementManager
-# from .ArchitecturalRequirementManager import ArchitecturalRequirementManager
