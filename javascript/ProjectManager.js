@@ -179,6 +179,10 @@ function toggleEditor(type, id=''){
     }
 }
 
+function closeModal(){
+    document.querySelector(".modal-content .modal-header .btn-close").click()
+}
+
 function exportJson(){
     const json = JSON.stringify(project, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -197,6 +201,33 @@ function exportJson(){
 }
 function exportTable(){
     alert("Funcionalidade em desenvolvimento")
+}
+
+function showToast(message, type="info"){
+
+    // Cria o elemento do toast
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.role = 'alert';
+    toast.ariaLive = 'assertive';
+    toast.ariaAtomic = 'true';
+    toast.innerHTML = `
+        <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        </div>
+    `;
+
+    // Adiciona ao container
+    document.getElementById('toast-container').appendChild(toast);
+
+    // Inicializa e exibe
+    const bsToast = new bootstrap.Toast(toast, { delay: 4000 });
+    bsToast.show();
+
+    // Remove depois de esconder
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+
 }
 
 function updateName(){
@@ -233,16 +264,17 @@ function initializeProjectSettings(){
 
 }
 
-function notify(message){
-    alert(message)
+function notify(message, type="info"){
+    showToast(message, type)
 }
 
 function SubmitEditArtifact(){
     const type = currentArtifactType
     submittionHandlers[type]();
-    notify(`${type} atualizado com sucesso!`);
+    notify(`Artefato atualizado com sucesso!`, 'success');
     StorageManager.saveProject(project)
     RenderArtifacts()
+    closeModal()
 }
 
 function RenderEditModal(content){
@@ -556,7 +588,7 @@ function RenderSettings(){
     qualityAttributeList.innerHTML = ''
     businessAttributeList.innerHTML = ''
 
-    console.dir(`entrou no rendersettings, o project ta assim: ${project.IntensityDegrees}`)
+    console.dir(`entrou no render settings, o project ta assim: ${project.IntensityDegrees}`)
 
     for(let iDeg in project.IntensityDegrees){
         console.log(iDeg)
