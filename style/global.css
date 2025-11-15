@@ -113,7 +113,8 @@ button.navbar-toggler span.navbar-toggler-icon{
 }
 
 .card .card-header, .card .card-footer{
-    background: white;
+    /* background: white; */
+    background: var(--dark-bg);
     color: var(--khaki);
 }
 
