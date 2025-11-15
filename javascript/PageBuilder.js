@@ -33,7 +33,7 @@ class PageBuilder {
                 <button type="button" class="btn btn-primary">Salvar</button>
             `;
             return `
-            <div class="modal fade" tabindex="-1" id="${id}" aria-labelledby="${id}Label" aria-hidden="true">
+            <div class="modal fade" tabindex="-1" id="${id}" aria-labelledby="${id}Label">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -670,6 +670,53 @@ class PageBuilder {
             return html
         },
 
+        ArtifactTabsContainer: (tabs) => {
+            // tabs é um array com objetos: [{id, title, type, artifactList, count}, ...]
+            let tabsHTML = ''
+            let tabContentHTML = ''
+
+            for (let tab of tabs) {
+                // Criar abas
+                const activeClass = tabs.indexOf(tab) === 0 ? 'active' : ''
+                tabsHTML += `
+                    <button class="nav-link artifact-tab ${activeClass}" id="${tab.id}-tab" type="button" role="tab" 
+                            aria-controls="${tab.id}-content" aria-selected="${tabs.indexOf(tab) === 0}" 
+                            onclick="switchArtifactTab('${tab.id}', '${tab.type}')">
+                        ${tab.title} <span class="badge ms-2">${tab.count}</span>
+                    </button>
+                `
+
+                // Criar conteúdo das abas
+                let artifactListHTML = ''
+                for (let artifact of tab.artifactList) {
+                    artifactListHTML += PageBuilder.Basics.BasicElement('li', ['list-group-item', 'p-0'], {}, artifact)
+                }
+
+                const activeContentClass = tabs.indexOf(tab) === 0 ? 'show active' : ''
+                tabContentHTML += `
+                    <div class="tab-pane fade ${activeContentClass}" id="${tab.id}-content" role="tabpanel" aria-labelledby="${tab.id}-tab">
+                        <ul class="list-group list-group-flush artifact-list mt-3">
+                            ${artifactListHTML}
+                            <button class="btn architect-btn p-4" type="button" onclick="toggleEditor('${tab.type}')" data-bs-toggle="modal" data-bs-target="#edit-modal">
+                                <span>Criar artefato</span>
+                            </button>
+                        </ul>
+                    </div>
+                `
+            }
+
+            return `
+                <div class="artifact-tabs-container">
+                    <nav class="nav artifact-tabs-nav border-bottom" role="tablist">
+                        ${tabsHTML}
+                    </nav>
+                    <div class="tab-content artifact-tabs-content">
+                        ${tabContentHTML}
+                    </div>
+                </div>
+            `
+        },
+
         ProjectAddFormContainer: (formId, formChildren) => {
             return `
             <div>
@@ -682,6 +729,83 @@ class PageBuilder {
             <div>
                 <form id="${formId}">${formChildren}</form>
             </div>
+            `
+        },
+
+        InfoBox: (message) => {
+            return `
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <i class="bi bi-question-circle me-3"></i>
+                <div>
+                    ${message}
+                </div>
+            </div>
+            `
+        },
+
+        AttributeManagementTable: (attributeType, attributes) => {
+            // attributeType: 'quality-attribute' ou 'business-attribute'
+            // attributes: objeto com {id: name, ...}
+            
+            let rows = []
+            for (let id in attributes) {
+                rows.push(`
+                    <tr>
+                        <td>${id}</td>
+                        <td>${attributes[id]}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary" type="button" 
+                                    onclick="editAttributeFromTable('${attributeType}', '${id}')" 
+                                    title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" type="button" 
+                                    onclick="deleteAttribute('${attributeType}', '${id}')"
+                                    title="Deletar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `)
+            }
+
+            return `
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Nome</th>
+                                <th style="width: 120px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.length > 0 ? rows.join('') : '<tr><td colspan="3" class="text-center text-muted">Nenhum atributo criado</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `
+        },
+
+        AttributeEditorForm: (attributeType) => {
+            // attributeType: 'quality-attribute' ou 'business-attribute'
+            const label = attributeType === 'quality-attribute' ? 'Atributo de Qualidade' : 'Atributo de Negócio'
+            const placeholder = attributeType === 'quality-attribute' ? 'Ex: Performance, Segurança...' : 'Ex: Custo, Tempo de Entrega...'
+            
+            return `
+                <div class="w-100 d-flex gap-2 align-items-end">
+                    <div class="flex-grow-1">
+                        <label for="new-attribute-name-${attributeType}" class="form-label mb-2">${label}</label>
+                        <input type="text" class="form-control" id="new-attribute-name-${attributeType}" 
+                            name="new_attribute_name" placeholder="${placeholder}" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" 
+                        onclick="submitNewAttribute('${attributeType}')">
+                        Salvar
+                    </button>
+                </div>
             `
         }
     }

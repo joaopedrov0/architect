@@ -1,55 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor de Projeto - The Architect</title>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor de Projeto - The Architect</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+      crossorigin="anonymous"
+      defer
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"
-    defer></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style/vars.css" />
+    <link rel="stylesheet" href="./style/global.css" />
+    <link rel="stylesheet" href="./style/buttons.css" />
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="./style/vars.css">
-  <link rel="stylesheet" href="./style/global.css">
-  <link rel="stylesheet" href="./style/buttons.css">
+    <!-- Favicon -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="./favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="./favicon/site.webmanifest" />
 
+    <!-- Script -->
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-  <link rel="manifest" href="./favicon/site.webmanifest">
-
-  <!-- Script -->
-   
     <!-- Scripts -->
     <script src="./javascript/Render.js" defer></script>
     <script src="./javascript/Project.js" defer></script>
     <script src="./javascript/PageBuilder.js" defer></script>
     <script src="./javascript/StorageManager.js" defer></script>
+    <script src="./javascript/artifactGuides.js" defer></script>
+    <script src="./javascript/modalHandlers.js" defer></script>
+    <script src="./javascript/submitHandlers.js" defer></script>
+    <script src="./javascript/artifactProcessors.js" defer></script>
     <!-- <script src="/javascript/ProjectsMenu.js" defer></script> -->
-   <script src="./javascript/ProjectManager.js" defer></script>
-</head>
+    <script src="./javascript/ProjectManager.js" defer></script>
+  </head>
 
-<body>
-  <div id="toast-container" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"></div>
-  <div id="modal-area"></div>
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-
-      <a class="navbar-brand d-flex align-items-center" href="./index.html">
-        <div class="logo">
-          <svg class="logo" version="1.0" xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt"
-            viewBox="0 0 2544.000000 2544.000000" preserveAspectRatio="xMidYMid meet">
-
-            <g transform="translate(0.000000,2544.000000) scale(0.100000,-0.100000)" fill="#c6ac8fff" stroke="none">
-              <path d="M7853 19573 c-648 -1279 -1086 -2726 -1328 -4388 -29 -199 -36 -270
+  <body>
+    <div
+      id="toast-container"
+      class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+    ></div>
+    <div id="modal-area"></div>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="./index.html">
+          <div class="logo">
+            <svg
+              class="logo"
+              version="1.0"
+              xmlns="http://www.w3.org/2000/svg"
+              width="50pt"
+              height="50pt"
+              viewBox="0 0 2544.000000 2544.000000"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g
+                transform="translate(0.000000,2544.000000) scale(0.100000,-0.100000)"
+                fill="#c6ac8fff"
+                stroke="none"
+              >
+                <path
+                  d="M7853 19573 c-648 -1279 -1086 -2726 -1328 -4388 -29 -199 -36 -270
 -32 -345 l5 -95 -237 -38 c-467 -76 -897 -169 -988 -216 -68 -34 -173 -140
 -173 -173 0 -13 180 -141 430 -307 l245 -161 150 29 c219 44 349 67 533 96
 l163 25 37 -25 c59 -39 111 -53 300 -80 373 -54 986 -172 1077 -206 28 -11
@@ -138,35 +177,44 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
 422 66 38 126 69 134 70 7 1 70 -35 140 -78z m3381 -7 c354 -198 837 -419
 1255 -573 278 -103 276 -102 195 -96 -490 38 -1091 123 -1560 221 -228 48
 -644 149 -669 163 -11 7 -4 14 30 31 81 41 343 193 459 267 63 40 120 73 125
-73 6 0 81 -39 165 -86z" />
-            </g>
-          </svg>
+73 6 0 81 -39 165 -86z"
+                />
+              </g>
+            </svg>
+          </div>
+          <span>The Architect</span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="./projects.html">Projetos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./materials.html"
+                >Materiais Didáticos</a
+              >
+            </li>
+          </ul>
         </div>
-        <span>The Architect</span>
-      </a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="./projects.html">Projetos</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./materials.html">Materiais Didáticos</a>
-          </li>
-        </ul>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main>
-    <div class="container mt-3 mb-3">
-      <h1 class="text-sm-center">The Architect</h1>
+    <main>
+      <div class="container mt-3 mb-3">
+        <h1 class="text-sm-center">The Architect</h1>
 
         <div class="container">
           <div class="row gy-3 project-settings">
@@ -175,22 +223,30 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
                 <div class="btn" onclick="exportJson()">Exportar json</div>
                 <div class="btn" onclick="exportTable()">Exportar tabela</div>
               </div>
-              <div class="btn danger" data-bs-target="#delete-modal" data-bs-toggle="modal">Apagar projeto</div>
+              <div
+                class="btn danger"
+                data-bs-target="#delete-modal"
+                data-bs-toggle="modal"
+              >
+                Apagar projeto
+              </div>
             </div>
-            <hr>
+            <hr />
 
             <h2>Configurações do projeto</h2>
 
-            <div id="nameField" class="col-md-6 col-12 d-grid">
-              
-            </div>
-            <div id="authorField" class="col-md-6 col-12 d-grid">
-              
-            </div>
+            <div id="nameField" class="col-md-6 col-12 d-grid"></div>
+            <div id="authorField" class="col-md-6 col-12 d-grid"></div>
 
             <div class="col-md-4 col-12 d-grid">
-              <button class="btn settings-btn" type="button" data-bs-toggle="collapse"
-                data-bs-target="#graus-de-intensidade" aria-expanded="false" aria-controls="graus-de-intensidade">
+              <button
+                class="btn settings-btn"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#graus-de-intensidade"
+                aria-expanded="false"
+                aria-controls="graus-de-intensidade"
+              >
                 <h3 class="text-lg-center">Graus de intensidade</h3>
                 <i class="bi bi-chevron-down"></i>
               </button>
@@ -199,14 +255,22 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
                   <li class="list-group-item">An item</li>
                   <li class="list-group-item">A second item</li>
                   <li class="list-group-item">A third item</li>
-                  <button class="btn architect-btn p-4" type="button"><span>Editar</span></button>
+                  <button class="btn architect-btn p-4" type="button">
+                    <span>Editar</span>
+                  </button>
                 </ul>
               </div>
             </div>
 
             <div class="col-md-4 col-12 d-grid">
-              <button class="btn settings-btn" type="button" data-bs-toggle="collapse"
-                data-bs-target="#atributos-de-qualidade" aria-expanded="false" aria-controls="atributos-de-qualidade">
+              <button
+                class="btn settings-btn"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#atributos-de-qualidade"
+                aria-expanded="false"
+                aria-controls="atributos-de-qualidade"
+              >
                 <h3 class="text-lg-center">Atributos de Qualidade</h3>
                 <i class="bi bi-chevron-down"></i>
               </button>
@@ -215,14 +279,22 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
                   <li class="list-group-item">An item</li>
                   <li class="list-group-item">A second item</li>
                   <li class="list-group-item">A third item</li>
-                  <button class="btn architect-btn p-4" type="button"><span>Editar</span></button>
+                  <button class="btn architect-btn p-4" type="button">
+                    <span>Editar</span>
+                  </button>
                 </ul>
               </div>
             </div>
 
             <div class="col-md-4 col-12 d-grid">
-              <button class="btn settings-btn" type="button" data-bs-toggle="collapse"
-                data-bs-target="#atributos-de-negocio" aria-expanded="false" aria-controls="atributos-de-negocio">
+              <button
+                class="btn settings-btn"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#atributos-de-negocio"
+                aria-expanded="false"
+                aria-controls="atributos-de-negocio"
+              >
                 <h3 class="text-lg-center">Atributos de Negócio</h3>
                 <i class="bi bi-chevron-down"></i>
               </button>
@@ -231,28 +303,27 @@ c94 -64 316 -195 465 -273 72 -38 132 -72 132 -75 0 -3 -60 -36 -132 -75 -149
                   <li class="list-group-item">An item</li>
                   <li class="list-group-item">A second item</li>
                   <li class="list-group-item">A third item</li>
-                  <button class="btn architect-btn p-4" type="button"><span>Editar</span></button>
+                  <button class="btn architect-btn p-4" type="button">
+                    <span>Editar</span>
+                  </button>
                 </ul>
               </div>
             </div>
 
-            <hr>
-
-
+            <hr />
           </div>
-          <div class="row gy-3 project-artifacts">
+          <div class="row gy-1 project-artifacts">
             <h2 class="text-md-center">Artefatos</h2>
             <div id="artifacts-container" class="dynamic"></div>
           </div>
         </div>
-    </div>
-  </main>
+      </div>
+    </main>
 
-  <footer>
-    <div class="container d-flex justify-content-center p-2">
-      <a href="https://github.com/joaopedrov0">@joaopedrov0</a>
-    </div>
-  </footer>
-</body>
-
+    <footer>
+      <div class="container d-flex justify-content-center p-2">
+        <a href="https://github.com/joaopedrov0">@joaopedrov0</a>
+      </div>
+    </footer>
+  </body>
 </html>
